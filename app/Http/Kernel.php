@@ -86,5 +86,6 @@ class Kernel extends KernelVendor
         'user.enabled' => UserEnabled::class,
         'user.manager-mode' => UserManagerMode::class,
         'user.request' => UserRequest::class,
+        'check.permission' => \App\Http\Middleware\CheckPermission::class,
     ];
 }
