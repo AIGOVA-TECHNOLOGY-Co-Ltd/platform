@@ -10,31 +10,31 @@ Open source GPS device management platform developed using Laravel 11, PHP 8.2 a
 
 ### Supported Devices
 
-* **Sinotrack**: Confirmed ST-90X models using the Sinotrack protocol.
-* **Coban**: TK303G model confirmed using GP103 protocol.
-* **Teltonika**: By TCP using Teltonika protocol.
-* **Concox** and **JimiLab**: JM-LL01 model confirmed via GT06 protocol.
-* **Queclink**: Confirmed model GV500MA using Queclink protocol.
-* **OsmAnd**: Using HTTP OsmAnd protocol.
-* **iTriangle / Aquila**: Using the Aquila protocol.
+-   **Sinotrack**: Confirmed ST-90X models using the Sinotrack protocol.
+-   **Coban**: TK303G model confirmed using GP103 protocol.
+-   **Teltonika**: By TCP using Teltonika protocol.
+-   **Concox** and **JimiLab**: JM-LL01 model confirmed via GT06 protocol.
+-   **Queclink**: Confirmed model GV500MA using Queclink protocol.
+-   **OsmAnd**: Using HTTP OsmAnd protocol.
+-   **iTriangle / Aquila**: Using the Aquila protocol.
 
 ### Features
 
-* **Modern platform with user-friendly interface:** The platform uses Laravel 11 to provide a smooth user experience and an attractive graphical interface.
-* **PHP 8.2 compatibility:** Leverages the latest features of PHP 8.2, including performance and security enhancements. It is also compatible with higher versions of PHP.
-* **Data Management with MySQL 8:** Uses MySQL 8.0.12 or higher for efficient and secure management of large volumes of tracking data, as well as extensive support for GIS functionality.
-* **Real-Time Tracking:** Allows users to track the location and status of their Sinotrack ST-90x devices in real time.
-* **Detailed Reporting:** Generates comprehensive reports that aid in decision making and data analysis.
-* **Alarms and Notifications:** Configure custom alarms (geofence, motion, speed, etc...) for specific events related to the tracking devices. Notifications can be configured via Telegram.
-* **Multi-User Support:** Supports the creation of multiple user accounts with different levels of access and permissions.
-* **Public Environment:** If you wish you can generate links for individual trips and share them publicly. You can also directly share a device where all its trips will be publicly visible.
+-   **Modern platform with user-friendly interface:** The platform uses Laravel 11 to provide a smooth user experience and an attractive graphical interface.
+-   **PHP 8.2 compatibility:** Leverages the latest features of PHP 8.2, including performance and security enhancements. It is also compatible with higher versions of PHP.
+-   **Data Management with MySQL 8:** Uses MySQL 8.0.12 or higher for efficient and secure management of large volumes of tracking data, as well as extensive support for GIS functionality.
+-   **Real-Time Tracking:** Allows users to track the location and status of their Sinotrack ST-90x devices in real time.
+-   **Detailed Reporting:** Generates comprehensive reports that aid in decision making and data analysis.
+-   **Alarms and Notifications:** Configure custom alarms (geofence, motion, speed, etc...) for specific events related to the tracking devices. Notifications can be configured via Telegram.
+-   **Multi-User Support:** Supports the creation of multiple user accounts with different levels of access and permissions.
+-   **Public Environment:** If you wish you can generate links for individual trips and share them publicly. You can also directly share a device where all its trips will be publicly visible.
 
 ### Requirements
 
-- Linux SO
-- PHP 8.2 or higher (bcmath bz2 intl mbstring opcache pdo_mysql pcntl redis sockets xsl zip)
-- MySQL 8.0.12 or higher
-- Redis
+-   Linux SO
+-   PHP 8.2 or higher (bcmath bz2 intl mbstring opcache pdo_mysql pcntl redis sockets xsl zip)
+-   MySQL 8.0.12 or higher
+-   Redis
 
 ### Demo
 
@@ -42,12 +42,31 @@ You can test the demo version at https://tracker-demo.lito.com.es/
 
 ### Documentation
 
-* [Local Installation](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-Local-Installation)
-* [Docker Installation](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-Docker-Installation)
-* [Initial Configuration](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-Initial-Configuration)
-* [Console Commands](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-Console-Commands)
-* [API](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-API)
-* [SMS Configuration to Sinotrack Devices](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-SMS-Configuration-to-Sinotrack-Devices)
+-   [Local Installation](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-Local-Installation)
+-   [Docker Installation](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-Docker-Installation)
+-   [Initial Configuration](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-Initial-Configuration)
+-   [Console Commands](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-Console-Commands)
+-   [API](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-API)
+-   [SMS Configuration to Sinotrack Devices](https://github.com/eusonlito/GPS-Tracker/wiki/%5BEN%5D-SMS-Configuration-to-Sinotrack-Devices)
+
+### From Source
+
+Download composer with
+
+sudo apt install php-mysql
+sudo apt install php-xml
+sudo apt install composer
+Luanch setup ./composer setup
+
+Run source php artisan serve
+
+Run with public ip php artisan serve --host=0.0.0.0 --port=8000
+
+Remove Configuration Cache
+
+php artisan config:clear
+composer dump-autoload
+php artisan key:generate
 
 ### Screenshots
 
@@ -89,4 +108,3 @@ Screenshots are in english, you can change the system language to spanish.
 ![screencapture-tracker-timezone-2023-11-22-09_42_22](https://github.com/eusonlito/GPS-Tracker/assets/644551/35dec451-fea1-4734-a28c-c70a7dc13be0)
 ![screencapture-tracker-shared-trip-11da6b7b-88bd-11ee-b488-4cedfbcaec68-2023-11-22-09_42_50](https://github.com/eusonlito/GPS-Tracker/assets/644551/5f5e2fcc-1b33-48cb-b62d-1e5cfebde6c9)
 ![screencapture-tracker-shared-device-066b1953-88bd-11ee-b488-4cedfbcaec68-2023-11-22-09_42_57](https://github.com/eusonlito/GPS-Tracker/assets/644551/f0be5f69-0a8e-40c4-9e8d-72f6cb828ec7)
-
