@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
+use App\Http\Middleware\CheckPermission;
 
 class GetEnterprise extends ControllerApiAbstract
 {
@@ -18,11 +19,21 @@ class GetEnterprise extends ControllerApiAbstract
      */
     public function __invoke(Request $request): JsonResponse
     {
+        // Lấy tất cả tham số từ request
+        $params = $request->all();
+
+        $checkPermission = new CheckPermission();
+        $targetEnterpriseId = isset($params['id']) ? $params['id'] : $params['user_enterprise_id'];
+
+        $hasPermission = $checkPermission->validatePermission(request: $request, requiredEnterpriseId: $targetEnterpriseId);
+
+        if (!$hasPermission) {
+            return response()->json(['message' => 'Forbidden: You do not have permission'], 403);
+        }
         // Lấy danh sách tất cả các cột trong bảng enterprises
         $tableColumns = Schema::getColumnListing('enterprises');
 
-        // Lấy tất cả tham số từ request
-        $params = $request->all();
+
 
         Log::info('GetEnterprise:', ['params' => $params]);
 
