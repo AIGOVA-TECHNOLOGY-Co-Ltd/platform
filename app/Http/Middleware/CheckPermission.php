@@ -38,7 +38,7 @@ class CheckPermission
             $roles = DB::table('user_roles')
                 ->where('user_id', $userId)
                 ->join('roles', 'user_roles.role_id', '=', 'roles.id')
-                ->select('user_roles.role_id', 'roles.name as role_name')
+                ->select('user_roles.role_id', 'roles.name as role_name', 'roles.highest_privilege_role as highest_privilege_role')
                 ->get()
                 ->map(fn($item) => (array) $item)
                 ->values()
@@ -46,6 +46,7 @@ class CheckPermission
 
             $roleNames = collect($roles)->pluck('role_name')->toArray();
             $roleIds = collect($roles)->pluck('role_id')->toArray();
+
 
             if (in_array('Admin System', $roleNames, true) && is_null($enterpriseId)) {
                 $request->merge([
@@ -111,106 +112,149 @@ class CheckPermission
     /**
      * Kiểm tra quyền GET
      */
-    public function validatePermission(Request $request, ?int $requiredEnterpriseId = null, ?int $requiredEntityId = null, ?int $requiredRoleId = null, ?int $requiredEntityRecordId = null): bool
-    {
+    public function validatePermission(
+        Request $request,
+        ?int $requiredEnterpriseId = null,
+        ?int $requiredEntityId = null,
+        ?int $requiredRoleId = null,
+        ?int $requiredEntityRecordId = null,
+        ?string $requiredRoleName = null,
+        ?int $requiredHighestPrivilegeRole = null
+    ): bool {
         // Log the incoming request for debugging
-        Log::info('validatePermission called', [
-            'requiredEnterpriseId' => $requiredEnterpriseId,
-            'requiredEntityId' => $requiredEntityId,
-            'requiredRoleId' => $requiredRoleId,
-            'requiredEntityRecordId' => $requiredEntityRecordId,
-            'user_enterprise_id' => $request['user_enterprise_id'],
-        ]);
+        // Log::info('validatePermission called', [
+        //     'requiredEnterpriseId' => $requiredEnterpriseId,
+        //     'requiredEntityId' => $requiredEntityId,
+        //     'requiredRoleId' => $requiredRoleId,
+        //     'requiredEntityRecordId' => $requiredEntityRecordId,
+        //     'user_enterprise_id' => $request['user_enterprise_id'],
+        // ]);
 
         // Kiểm tra các permission trong request
         if (isset($request['permissions']) && is_array($request['permissions'])) {
             foreach ($request['permissions'] as $permission) {
-                Log::info('Checking permission', ['permission' => $permission]);
+                // Log::info('Checking permission', ['permission' => $permission]);
 
                 $scope = DB::table('scopes')->where('id', $permission['scope_id'])->value('name');
-                Log::info('Scope name for permission', ['scope' => $scope]);
+                // Log::info('Scope name for permission', ['scope' => $scope]);
 
                 if ($scope === 'none') {
-                    Log::warning('Permission scope is none', ['permission' => $permission]);
+                    // Log::warning('Permission scope is none', ['permission' => $permission]);
                     return false;
                 }
 
                 // Kiểm tra Entity ID
                 if ($requiredEntityId !== null) {
-                    Log::info('Checking Entity ID', ['requiredEntityId' => $requiredEntityId, 'permissionEntityId' => $permission['entity_id']]);
+                    // Log::info('Checking Entity ID', ['requiredEntityId' => $requiredEntityId, 'permissionEntityId' => $permission['entity_id']]);
                     if ($requiredEntityId !== $permission['entity_id']) {
-                        Log::warning('Entity ID mismatch', ['requiredEntityId' => $requiredEntityId, 'permissionEntityId' => $permission['entity_id']]);
+                        // Log::warning('Entity ID mismatch', ['requiredEntityId' => $requiredEntityId, 'permissionEntityId' => $permission['entity_id']]);
                         return false;
                     }
                 }
 
                 // Kiểm tra Enterprise ID
                 if ($requiredEnterpriseId !== null) {
-                    Log::info('Checking Enterprise ID', ['requiredEnterpriseId' => $requiredEnterpriseId, 'userEnterpriseId' => $request['user_enterprise_id']]);
+                    // Log::info('Checking Enterprise ID', ['requiredEnterpriseId' => $requiredEnterpriseId, 'userEnterpriseId' => $request['user_enterprise_id']]);
                     if ($requiredEnterpriseId !== $request['user_enterprise_id']) {
-                        Log::warning('Enterprise ID mismatch', ['requiredEnterpriseId' => $requiredEnterpriseId, 'userEnterpriseId' => $request['user_enterprise_id']]);
+                        // Log::warning('Enterprise ID mismatch', ['requiredEnterpriseId' => $requiredEnterpriseId, 'userEnterpriseId' => $request['user_enterprise_id']]);
                         return false;
                     }
                 }
 
                 // Kiểm tra Entity Record ID
                 if ($requiredEntityRecordId !== null) {
-                    Log::info('Checking Entity Record ID', ['requiredEntityRecordId' => $requiredEntityRecordId, 'permissionEntityRecordId' => $permission['entity_record_id']]);
+                    // Log::info('Checking Entity Record ID', ['requiredEntityRecordId' => $requiredEntityRecordId, 'permissionEntityRecordId' => $permission['entity_record_id']]);
                     if ($requiredEntityRecordId !== $permission['entity_record_id']) {
-                        Log::warning('Entity Record ID mismatch', ['requiredEntityRecordId' => $requiredEntityRecordId, 'permissionEntityRecordId' => $permission['entity_record_id']]);
+                        // Log::warning('Entity Record ID mismatch', ['requiredEntityRecordId' => $requiredEntityRecordId, 'permissionEntityRecordId' => $permission['entity_record_id']]);
                         return false;
                     }
                 }
 
                 if ($requiredRoleId !== null) {
                     // Sử dụng hasRolePermission để kiểm tra quyền
-                    Log::info('Checking role permission', ['role_id' => $permission['role_id'], 'requiredRoleId' => $requiredRoleId, 'user_enterprise_id' => $request['user_enterprise_id']]);
+                    // Log::info('Checking role permission', ['role_id' => $permission['role_id'], 'requiredRoleId' => $requiredRoleId, 'user_enterprise_id' => $request['user_enterprise_id']]);
                     if (!$this->hasRolePermission($permission['role_id'], $requiredRoleId, $request['user_enterprise_id'])) {
-                        Log::warning('Role permission check failed', ['role_id' => $permission['role_id'], 'requiredRoleId' => $requiredRoleId]);
+                        // Log::warning('Role permission check failed', ['role_id' => $permission['role_id'], 'requiredRoleId' => $requiredRoleId]);
                         return false; // Không có quyền
                     }
                 }
 
 
+
+                if ($requiredRoleName !== null) {
+
+                    $role_name = null; // Mặc định là null nếu không tìm thấy
+
+                    foreach ($request['user_role'] as $role) {
+                        if ($role['role_id'] == $permission['role_id']) {
+                            $role_name = $role['role_name'];
+                            break; // Dừng lại khi tìm thấy role_id
+                        }
+                    }
+
+                    // Log::warning('Role Name', ['role name' => $role_name]);
+
+                    if ($requiredRoleName !== $role_name) {
+                        return false;
+                    }
+                }
+
+                if ($requiredHighestPrivilegeRole !== null) {
+                    $role_highest_privilege_role = null; // Mặc định là null nếu không tìm thấy
+
+                    foreach ($request['user_role'] as $role) {
+                        if ($role['role_id'] == $permission['role_id']) {
+                            $role_highest_privilege_role = $role['highest_privilege_role'];
+                            break; // Dừng lại khi tìm thấy role_id
+                        }
+                    }
+
+                    // Log::warning('Role role_highest_privilege_role', ['role_highest_privilege_role' => $role_highest_privilege_role]);
+
+                    if ($requiredHighestPrivilegeRole !== $role_highest_privilege_role) {
+                        return false;
+                    }
+                }
+
                 // Log the request method
                 $requestMethod = $request->method();
-                Log::info('Request method', ['method' => $requestMethod]);
+                // Log::info('Request method', ['method' => $requestMethod]);
 
                 if ($requestMethod === 'GET') {
-                    Log::info('Checking GET permission', ['validateGetPermission' => $this->validateGetPermission()]);
+                    // Log::info('Checking GET permission', ['validateGetPermission' => $this->validateGetPermission()]);
                     if (!$this->validateGetPermission()) {
-                        Log::warning('GET permission denied');
+                        // Log::warning('GET permission denied');
                         return false; // Không có quyền
                     }
                 }
 
                 if ($requestMethod === 'POST') {
-                    Log::info('Checking POST permission');
+                    // Log::info('Checking POST permission');
                     if (!$this->validatePostPermission()) {
-                        Log::warning('POST permission denied');
+                        // Log::warning('POST permission denied');
                         return false; // Không có quyền
                     }
                 }
 
                 if ($requestMethod === 'PATCH') {
-                    Log::info('Checking PATCH permission');
+                    // Log::info('Checking PATCH permission');
                     if (!$this->validatePatchPermission()) {
-                        Log::warning('PATCH permission denied');
+                        // Log::warning('PATCH permission denied');
                         return false; // Không có quyền
                     }
                 }
 
                 if ($requestMethod === 'DELETE') {
-                    Log::info('Checking DELETE permission');
+                    // Log::info('Checking DELETE permission');
                     if (!$this->validateDeletePermission()) {
-                        Log::warning('DELETE permission denied');
+                        // Log::warning('DELETE permission denied');
                         return false; // Không có quyền
                     }
                 }
             }
         }
 
-        Log::info('Permission validation successful');
+        // Log::info('Permission validation successful');
         return true;
     }
 

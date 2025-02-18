@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
+use App\Http\Middleware\CheckPermission;
 
 class UpdateEnterprise extends ControllerApiAbstract
 {
@@ -18,6 +19,13 @@ class UpdateEnterprise extends ControllerApiAbstract
      */
     public function __invoke(Request $request): JsonResponse
     {
+        $checkPermission = new CheckPermission();
+        $hasPermission = $checkPermission->validatePermission(request: $request, requiredHighestPrivilegeRole: 1);
+        if (!$hasPermission) {
+            return response()->json(['message' => 'Forbidden: You do not have permission'], 403);
+        }
+
+
         $tableColumns = Schema::getColumnListing('enterprises');
 
         // Kết hợp dữ liệu từ cả query params (?id=3) và body

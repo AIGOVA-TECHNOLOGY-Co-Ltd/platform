@@ -30,6 +30,7 @@ class GetEnterprise extends ControllerApiAbstract
         if (!$hasPermission) {
             return response()->json(['message' => 'Forbidden: You do not have permission'], 403);
         }
+
         // Lấy danh sách tất cả các cột trong bảng enterprises
         $tableColumns = Schema::getColumnListing('enterprises');
 
