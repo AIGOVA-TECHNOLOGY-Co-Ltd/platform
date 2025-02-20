@@ -1,4 +1,4 @@
-<nav class="side-nav bg-white">
+<nav class="side-nav bg-white rounded-2xl" style="border-radius: 1rem">
     <ul>
         <li>
             <a href="{{ route('dashboard.index') }}" class="logo {{ str_starts_with($ROUTE, 'dashboard.') ? 'active' : '' }}">
