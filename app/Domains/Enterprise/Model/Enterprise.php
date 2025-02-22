@@ -1,41 +1,51 @@
 <?php
-
-declare(strict_types=1);
-
 namespace App\Domains\Enterprise\Model;
 
+use App\Domains\Role\Model\Role;
+use App\Domains\Core\Model\ModelAbstract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Domains\User\Model\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Enterprise extends Model
+class Enterprise extends ModelAbstract
 {
     use HasFactory;
 
-    /**
-     * @var string
-     */
     protected $table = 'enterprises';
 
-    /**
-     * @const string
-     */
-    public const TABLE = 'enterprises';
+    protected $primaryKey = 'id';
 
-    /**
-     * Quan hệ: Một doanh nghiệp có nhiều Users
-     */
-    public function users(): HasMany
+    protected $fillable = [
+        'name',
+        'code',
+        'address',
+        'phone_number',
+        'email',
+        'owner_id',
+    ];
+
+    protected $hidden = [];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /** Một Enterprise thuộc về một Role */
+    public function ownerRole(): BelongsTo
     {
-        return $this->hasMany(User::class, 'enterprise_id');
+        return $this->belongsTo(Role::class, 'owner_id');
     }
 
-    /**
-     * Kiểm tra nếu một User thuộc doanh nghiệp này
-     */
-    public function hasUser(int $userId): bool
+    /** Một Enterprise cos nhiều Role */
+    public function roles(): BelongsToMany
     {
-        return $this->users()->where('id', $userId)->exists();
+        return $this->belongsToMany(Role::class);
+    }
+
+    /** Kiểm tra Enterprise có Role cụ thể hay không */
+    public function hasRole($role): bool
+    {
+        return $this->roles->contains('name', $role);
     }
 }

@@ -241,7 +241,26 @@
         </li>
     </ul>
 </li>
+{{--start add item Enterprise--}}
+@php ($active = str_starts_with($ROUTE, 'enterprise'))
+<li>
+    <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
+        <div class="side-menu__icon">@icon('briefcase')</div>
+        <div class="side-menu__title">
+            {{ __('in-sidebar.enterprise') }} <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')</div>
+        </div>
+    </a>
 
+    <ul class="{{ $active ? 'side-menu__sub-open' : '' }}">
+        <li>
+            <a href="/enterprise" class="side-menu {{ ($ROUTE === 'enterprise.index') ? 'side-menu--active' : '' }}">
+                <div class="side-menu__icon">@icon('list')</div>
+                <div class="side-menu__title">{{ __('in-sidebar.enterprise-index') }}</div>
+            </a>
+        </li>
+    </ul>
+    
+{{--end add item Enterprise--}}
 @php ($active = str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
 
 <li>
@@ -298,7 +317,6 @@
 
 
 </li>
-
 @if ($AUTH->adminMode())
 
 @php ($active = str_starts_with($ROUTE, 'user') || str_starts_with($ROUTE, 'ip-lock.'))
