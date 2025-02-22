@@ -25,11 +25,9 @@ class Index extends ControllerAbstract
             ->select([
                 'id',
                 'name',
-                'enterprise_id',
                 'description',
                 'created_at',
-                'highest_privilege_role'
-            ])->where('enterprise_id', auth()->user()->enterprise_id);
+            ]);
 
         if ($this->request->filled('search')) {
             $search = $this->request->get('search');
@@ -37,10 +35,6 @@ class Index extends ControllerAbstract
                 $q->where('name', 'LIKE', "%{$search}%")
                     ->orWhere('description', 'LIKE', "%{$search}%");
             });
-        }
-
-        if ($this->request->filled('enterprise_id')) {
-            $query->byEnterpriseId($this->request->get('enterprise_id'));
         }
 
         $query->orderBy('id', 'DESC');
@@ -62,7 +56,6 @@ class Index extends ControllerAbstract
     {
         return Model::query()
             ->enabled()
-            ->where('enterprise_id', auth()->user()->enterprise_id)
             ->orderBy('id', 'DESC')
             ->get();
     }
@@ -75,9 +68,7 @@ class Index extends ControllerAbstract
         return [
             'id' => $role->id,
             'name' => $role->name,
-            'enterprise_id' => $role->enterprise_id,
             'description' => $role->description,
-            'highest_privilege_role' => $role->highest_privilege_role,
             'created_at' => $role->created_at->toDateTimeString(),
         ];
     }

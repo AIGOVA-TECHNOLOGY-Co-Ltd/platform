@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Role extends ModelAbstract
 {
     use HasFactory;
-    use TypeFormat
+    use TypeFormat;
 
     /**
      * @var string
@@ -35,13 +35,21 @@ class Role extends ModelAbstract
     ];
 
     /**
-     * Quan hệ: Mỗi Role thuộc về một Enterprise
+     * Quan hệ: Mỗi Role liên kết với Enterprise thông qua User và UserRoles
+     * Giả sử Role -> UserRoles -> Users -> Enterprises
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function enterprise(): BelongsTo
     {
-        return $this->belongsTo(EnterpriseModel::class, 'enterprise_id');
+        return $this->hasOneThrough(
+            EnterpriseModel::class,
+            UserModel::class,
+            'id', // Foreign key trên users
+            'id', // Foreign key trên enterprises
+            'user_id', // Local key trên user_roles (kết nối với users)
+            'enterprise_id' // Local key trên users (kết nối với enterprises)
+        )->via('users'); // Sử dụng mối quan hệ users để kết nối
     }
 
     /**
@@ -67,15 +75,17 @@ class Role extends ModelAbstract
 
     /**
      * Kiểm tra nếu Role thuộc về một Enterprise cụ thể
+     * Giả sử kiểm tra qua mối quan hệ với Enterprise thông qua Users
      *
      * @param int $enterpriseId
      * @return bool
      */
     public function belongsToEnterprise(int $enterpriseId): bool
     {
-        return $this->enterprise_id === $enterpriseId;
+        // Kiểm tra qua mối quan hệ với Enterprise
+        return $this->enterprise && $this->enterprise->id === $enterpriseId;
     }
-  
+
     public function permissions(): HasMany
     {
         return $this->hasMany(\App\Domains\Permissions\Model\Permission::class, 'role_id');
