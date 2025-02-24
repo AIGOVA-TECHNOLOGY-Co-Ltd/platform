@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domains\Role\Controller;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use App\Domains\Role\Model\Role as Model;
-use App\Domains\Role\Service\Create as CreateService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Str; // Thêm use này để sử dụng Str::slug
+use App\Domains\Role\Service\Controller\Create as ControllerService;
 
 class Create extends ControllerAbstract
 {
+    /**
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
     public function __invoke(): Response|JsonResponse
     {
         if ($this->request->wantsJson()) {
@@ -21,39 +22,18 @@ class Create extends ControllerAbstract
 
         $this->meta('title', __('role-create.meta-title'));
 
-        return $this->page('role.create', $this->data());
+        return $this->page('role.create', $this->getService()->data());
     }
 
+    /**
+     * Store a new role.
+     *
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
     public function store(): Response|JsonResponse|RedirectResponse
     {
         try {
-            DB::beginTransaction();
-
-            $data = $this->request->all();
-            // Tạo alias từ name, chuyển thành slug và đảm bảo duy nhất
-            $alias = Str::slug($data['name']);
-            $originalAlias = $alias;
-            $counter = 1;
-
-            // Kiểm tra tính duy nhất của alias
-            while (Model::where('alias', $alias)->exists()) {
-                $alias = $originalAlias . '-' . $counter;
-                $counter++;
-            }
-
-            $data['alias'] = $alias; // Thêm alias vào dữ liệu
-
-            $role = CreateService::make($data)
-                ->validate()
-                ->create();
-
-            DB::commit();
-
-            $response = [
-                'status' => true,
-                'message' => __('role-create.success'),
-                'role' => $this->formatRole($role)
-            ];
+            $response = $this->getService()->store();
 
             if ($this->request->wantsJson()) {
                 return $this->json($response);
@@ -61,8 +41,6 @@ class Create extends ControllerAbstract
 
             return redirect()->route('role.index')->with('success', __('role-create.success'));
         } catch (\Exception $e) {
-            DB::rollBack();
-
             $errorResponse = [
                 'status' => false,
                 'message' => $e->getMessage()
@@ -76,79 +54,37 @@ class Create extends ControllerAbstract
         }
     }
 
-    protected function data(): array
-    {
-        return [
-            'errors' => session('errors') ?? new \Illuminate\Support\MessageBag(),
-        ];
-    }
-
-    protected function responseJson(): JsonResponse
-    {
-        return $this->json([
-            'data' => $this->data()
-        ]);
-    }
-
+    /**
+     * Show the form for editing the specified role.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
     public function edit($id): Response|JsonResponse
     {
-        $role = Model::findOrFail($id);
+        $role = \App\Domains\Role\Model\Role::findOrFail($id);
 
         if ($this->request->wantsJson()) {
             return $this->json([
-                'data' => array_merge($this->data(), ['role' => $this->formatRole($role)])
+                'data' => array_merge($this->getService()->data(), ['role' => $this->getService()->formatRole($role)])
             ]);
         }
 
         $this->meta('title', __('role-edit.meta-title'));
 
-        return $this->page('role.edit', array_merge($this->data(), ['role' => $role]));
+        return $this->page('role.edit', array_merge($this->getService()->data(), ['role' => $role]));
     }
 
+    /**
+     * Update the specified role.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
     public function update($id): Response|JsonResponse|RedirectResponse
     {
         try {
-            DB::beginTransaction();
-
-            $role = Model::findOrFail($id);
-
-            $validator = Validator::make($this->request->all(), [
-                'name' => 'required|string|max:100|unique:roles,name,' . $role->id,
-                'description' => 'nullable|string|max:255',
-
-            ]);
-
-            if ($validator->fails()) {
-                throw new \Illuminate\Validation\ValidationException($validator);
-            }
-
-            // Tạo alias mới từ name nếu name thay đổi
-            $newAlias = Str::slug($this->request->get('name'));
-            if ($role->name !== $this->request->get('name')) {
-                $originalAlias = $newAlias;
-                $counter = 1;
-
-                while (Model::where('alias', $newAlias)->where('id', '!=', $role->id)->exists()) {
-                    $newAlias = $originalAlias . '-' . $counter;
-                    $counter++;
-                }
-            } else {
-                $newAlias = $role->alias; // Giữ nguyên alias nếu name không thay đổi
-            }
-
-            $role->update([
-                'name' => $this->request->get('name'),
-                'description' => $this->request->get('description'),
-                'alias' => $newAlias, // Cập nhật alias
-            ]);
-
-            DB::commit();
-
-            $response = [
-                'status' => true,
-                'message' => __('role-update.success'),
-                'role' => $this->formatRole($role)
-            ];
+            $response = $this->getService()->update($id);
 
             if ($this->request->wantsJson()) {
                 return $this->json($response);
@@ -156,8 +92,6 @@ class Create extends ControllerAbstract
 
             return redirect()->route('role.index')->with('success', __('role-update.success'));
         } catch (\Exception $e) {
-            DB::rollBack();
-
             $errorResponse = [
                 'status' => false,
                 'message' => $e->getMessage()
@@ -171,20 +105,16 @@ class Create extends ControllerAbstract
         }
     }
 
+    /**
+     * Remove the specified role.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
     public function destroy($id): Response|JsonResponse|RedirectResponse
     {
         try {
-            DB::beginTransaction();
-
-            $role = Model::findOrFail($id);
-            $role->delete();
-
-            DB::commit();
-
-            $response = [
-                'status' => true,
-                'message' => __('role-delete.success'),
-            ];
+            $response = $this->getService()->destroy($id);
 
             if ($this->request->wantsJson()) {
                 return $this->json($response);
@@ -192,8 +122,6 @@ class Create extends ControllerAbstract
 
             return redirect()->route('role.index')->with('success', __('role-delete.success'));
         } catch (\Exception $e) {
-            DB::rollBack();
-
             $errorResponse = [
                 'status' => false,
                 'message' => $e->getMessage()
@@ -207,14 +135,25 @@ class Create extends ControllerAbstract
         }
     }
 
-    protected function formatRole(Model $role): array
+    /**
+     * Get JSON response for create/edit.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function responseJson(): JsonResponse
     {
-        return [
-            'id' => $role->id,
-            'name' => $role->name,
-            'description' => $role->description,
-            'alias' => $role->alias, // Thêm alias vào response JSON
-            'created_at' => $role->created_at ? \Carbon\Carbon::parse($role->created_at)->toDateTimeString() : null,
-        ];
+        return $this->json([
+            'data' => $this->getService()->data()
+        ]);
+    }
+
+    /**
+     * Get the service instance.
+     *
+     * @return \App\Domains\Role\Service\Controller\Create
+     */
+    protected function getService()
+    {
+        return ControllerService::new($this->request, $this->auth);
     }
 }
