@@ -1,5 +1,5 @@
 <?php return [
-    'index_size' => 'Index Size',
+    'index_size' => 'EnterpriseController Size',
     'meta-title' => 'Monitor > Database',
     'table_name' => 'Table',
     'table_rows' => 'Rows',

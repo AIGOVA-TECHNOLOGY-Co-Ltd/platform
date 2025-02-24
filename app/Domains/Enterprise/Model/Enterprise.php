@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Domains\Enterprise\Model;
 
 use App\Domains\Role\Model\Role;
@@ -6,6 +7,7 @@ use App\Domains\Core\Model\ModelAbstract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Enterprise extends ModelAbstract
 {
@@ -47,5 +49,10 @@ class Enterprise extends ModelAbstract
     public function hasRole($role): bool
     {
         return $this->roles->contains('name', $role);
+    }
+
+    public function owner():HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'owner_id');
     }
 }
