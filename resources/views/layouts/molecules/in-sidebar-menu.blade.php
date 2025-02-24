@@ -241,13 +241,15 @@
         </li>
     </ul>
 </li>
+
 {{--start add item Enterprise--}}
 @php ($active = str_starts_with($ROUTE, 'enterprise'))
 <li>
     <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
         <div class="side-menu__icon">@icon('briefcase')</div>
         <div class="side-menu__title">
-            {{ __('in-sidebar.enterprise') }} <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')</div>
+            {{ __('in-sidebar.enterprise') }}
+            <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')</div>
         </div>
     </a>
 
@@ -259,67 +261,11 @@
             </a>
         </li>
     </ul>
-    
-{{--end add item Enterprise--}}
-@php ($active = str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
 
-<li>
-    <!-- Role Dropdown -->
-    <a href="javascript:;" class="side-menu {{ request()->routeIs('role.*') ? 'side-menu--active' : '' }}">
-        <div class="side-menu__icon">@icon('user')</div>
-        <div class="side-menu__title">
-            {{ __('in-sidebar.role') }}
-            <div class="side-menu__sub-icon {{ request()->routeIs('role.*') ? 'transform rotate-180' : '' }}">
-                @icon('chevron-down')</div>
-        </div>
-    </a>
+    {{--end add item Enterprise--}}
+    @if ($AUTH->adminMode())
 
-    <ul
-        class="{{ request()->routeIs('role.index') || request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
-        <!-- Role Index -->
-        <li class="mt-2">
-            <a href="{{ route('role.index') }}"
-                class="side-menu {{ request()->routeIs('role.index') ? 'side-menu--active' : '' }}">
-                <div class="side-menu__icon">@icon('users')</div>
-                <div class="side-menu__title">{{ __('in-sidebar.role-index') }}</div>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('role.create') }}" class="side-menu {{ ($ROUTE === 'role.create') ? 'side-menu--active' : '' }}">
-                <div class="side-menu__icon">@icon('plus-circle')</div>
-                <div class="side-menu__title">{{ __('in-sidebar.role-create') }}</div>
-            </a>
-        </li>
-
-        <!-- Feature Management -->
-        <li class="mt-2 pl-4">
-            <a href="javascript:;" class="side-menu {{ request()->routeIs('role.feature.*') ? 'side-menu--active' : '' }}">
-                <div class="side-menu__icon">@icon('settings')</div>
-                <div class="side-menu__title">
-                    {{ __('in-sidebar.role-feature') }}
-                    <div
-                        class="side-menu__sub-icon {{ request()->routeIs('role.feature.*') ? 'transform rotate-180' : '' }}">
-                        @icon('chevron-down')
-                    </div>
-                </div>
-            </a>
-
-            <ul class="{{ request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
-                <li class="mt-2 pl-4">
-                    <a href="{{ route('role.feature.index') }}" class="side-menu {{ request()->routeIs('role.feature.index') ? 'side-menu--active' : '' }}">
-                        <div class="side-menu__icon">@icon('list')</div>
-                        <div class="side-menu__title">{{ __('in-sidebar.role-feature-index') }}</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-    </ul>
-
-
-</li>
-@if ($AUTH->adminMode())
-
-@php ($active = str_starts_with($ROUTE, 'user') || str_starts_with($ROUTE, 'ip-lock.'))
+    @php ($active = str_starts_with($ROUTE, 'user') || str_starts_with($ROUTE, 'ip-lock.') || str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
 
 <li>
     <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
@@ -361,6 +307,58 @@
                 <div class="side-menu__icon">@icon('lock')</div>
                 <div class="side-menu__title">{{ __('in-sidebar.ip-lock') }}</div>
             </a>
+        </li>
+
+        <!-- Thêm Role Dropdown dưới Blocked IPs -->
+        <li class="mt-2">
+            <a href="javascript:;" class="side-menu {{ request()->routeIs('role.*') ? 'side-menu--active' : '' }}">
+                <div class="side-menu__icon">@icon('user')</div>
+                <div class="side-menu__title">
+                    {{ __('in-sidebar.role') }}
+                    <div class="side-menu__sub-icon {{ request()->routeIs('role.*') ? 'transform rotate-180' : '' }}">
+                        @icon('chevron-down')
+                    </div>
+                </div>
+            </a>
+
+            <ul class="{{ request()->routeIs('role.index') || request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
+                <!-- Role Index -->
+                <li class="mt-2 pl-4">
+                    <a href="{{ route('role.index') }}"
+                        class="side-menu {{ request()->routeIs('role.index') ? 'side-menu--active' : '' }}">
+                        <div class="side-menu__icon">@icon('users')</div>
+                        <div class="side-menu__title">{{ __('in-sidebar.role-index') }}</div>
+                    </a>
+                </li>
+                <li class="pl-4">
+                    <a href="{{ route('role.create') }}" class="side-menu {{ ($ROUTE === 'role.create') ? 'side-menu--active' : '' }}">
+                        <div class="side-menu__icon">@icon('plus-circle')</div>
+                        <div class="side-menu__title">{{ __('in-sidebar.role-create') }}</div>
+                    </a>
+                </li>
+
+                <!-- Feature Management -->
+                <li class="mt-2 pl-4">
+                    <a href="javascript:;" class="side-menu {{ request()->routeIs('role.feature.*') ? 'side-menu--active' : '' }}">
+                        <div class="side-menu__icon">@icon('settings')</div>
+                        <div class="side-menu__title">
+                            {{ __('in-sidebar.role-feature') }}
+                            <div class="side-menu__sub-icon {{ request()->routeIs('role.feature.*') ? 'transform rotate-180' : '' }}">
+                                @icon('chevron-down')
+                            </div>
+                        </div>
+                    </a>
+
+                    <ul class="{{ request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
+                        <li class="mt-2 pl-4">
+                            <a href="{{ route('role.feature.index') }}" class="side-menu {{ request()->routeIs('role.feature.index') ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon">@icon('list')</div>
+                                <div class="side-menu__title">{{ __('in-sidebar.role-feature-index') }}</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </li>
     </ul>
 </li>
