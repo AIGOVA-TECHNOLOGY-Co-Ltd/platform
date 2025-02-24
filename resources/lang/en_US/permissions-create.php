@@ -13,5 +13,6 @@ return [
     'select-action' => 'Select Action',
     'enterprise' => 'Enterprise',
     'select-enterprise' => 'Select Enterprise',
+    'save' => 'Save',
 
 ];

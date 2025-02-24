@@ -63,7 +63,7 @@
                     {{ __('common.Cancel') }}
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    {{ __('permissions-create.Save') }}
+                    {{ __('permissions-create.save') }}
                 </button>
             </div>
         </form>
