@@ -1,63 +1,5 @@
 <?php declare(strict_types=1);
 
-// namespace App\Domains\Permissions\Service\Controller;
-
-// use Illuminate\Contracts\Auth\Authenticatable;
-// use Illuminate\Http\Request;
-// use App\Domains\Permissions\Model\Collection\Permission as Collection;
-// use App\Domains\Permissions\Model\Permission as Model;
-
-// class Index extends ControllerAbstract
-// {
-//     /**
-//      * @var bool
-//      */
-//     protected bool $userEmpty = true;
-
-//     /**
-//      * @var bool
-//      */
-//     protected bool $vehicleEmpty = true;
-
-//     /**
-//      * @param \Illuminate\Http\Request $request
-//      * @param \Illuminate\Contracts\Auth\Authenticatable $auth
-//      *
-//      * @return self
-//      */
-//     public function __construct(protected Request $request, protected Authenticatable $auth)
-//     {
-//         $this->data();
-//     }
-
-//     /**
-//      * @return array
-//      */
-//     public function data(): array
-//     {
-//         $data = $this->dataCore();
-
-//         // Nếu chưa có 'permissions', thêm vào
-//         if (!array_key_exists('permissions', $data)) {
-//             $data['permissions'] = Model::query()
-//                 ->with(['role', 'action', 'entity', 'scope']) // Load quan hệ nếu cần
-//                 ->get();
-//         }
-
-//         return $data;
-//     }
-
-//     /**
-//      * @return \App\Domains\Permissions\Model\Collection\Permission
-//      */
-
-//     public function list(): Collection
-//     {
-//         return new Collection(Model::query()->get()->all());
-//     }
-
-// }
-
 namespace App\Domains\Permissions\Service\Controller;
 
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -100,7 +42,7 @@ class Index extends ControllerAbstract
     {
         return new Collection(
             Model::query()
-                ->with(['role', 'action', 'entity', 'scope']) // Load các quan hệ cần thiết
+                ->with(['role', 'action']) // Load các quan hệ cần thiết
                 ->get()
         );
     }
