@@ -9,12 +9,10 @@ use App\Domains\Role\Service\Create as CreateService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str; // Thêm use này để sử dụng Str::slug
 
 class Create extends ControllerAbstract
 {
-    /**
-     * Hiển thị form tạo role mới
-     */
     public function __invoke(): Response|JsonResponse
     {
         if ($this->request->wantsJson()) {
@@ -26,15 +24,26 @@ class Create extends ControllerAbstract
         return $this->page('role.create', $this->data());
     }
 
-    /**
-     * Xử lý lưu role mới vào database
-     */
-    public function store(): Response|JsonResponse|RedirectResponse // Thêm RedirectResponse
+    public function store(): Response|JsonResponse|RedirectResponse
     {
         try {
             DB::beginTransaction();
 
-            $role = CreateService::make($this->request->all())
+            $data = $this->request->all();
+            // Tạo alias từ name, chuyển thành slug và đảm bảo duy nhất
+            $alias = Str::slug($data['name']);
+            $originalAlias = $alias;
+            $counter = 1;
+
+            // Kiểm tra tính duy nhất của alias
+            while (Model::where('alias', $alias)->exists()) {
+                $alias = $originalAlias . '-' . $counter;
+                $counter++;
+            }
+
+            $data['alias'] = $alias; // Thêm alias vào dữ liệu
+
+            $role = CreateService::make($data)
                 ->validate()
                 ->create();
 
@@ -66,46 +75,14 @@ class Create extends ControllerAbstract
             return redirect()->back()->withErrors($e->getMessage())->withInput();
         }
     }
-    /**
-     * Lấy dữ liệu cho form tạo role
-     */
+
     protected function data(): array
     {
         return [
-            'enterprises' => $this->getEnterprises(),
-            'privileges' => $this->getPrivileges(),
             'errors' => session('errors') ?? new \Illuminate\Support\MessageBag(),
         ];
     }
 
-    /**
-     * Lấy danh sách enterprises (bây giờ là input thủ công)
-     * Vì không có model Enterprise, ta sẽ tạo một danh sách giả lập để người dùng chọn
-     */
-    protected function getEnterprises(): array
-    {
-        // Danh sách giả lập enterprise_id (bạn có thể thay đổi theo dữ liệu thực tế)
-        return [
-            ['id' => 1, 'name' => 'Enterprise 1'],
-            ['id' => 2, 'name' => 'Enterprise 2'],
-            ['id' => 3, 'name' => 'Enterprise 3'],
-        ];
-    }
-
-    /**
-     * Lấy các mức privilege
-     */
-    protected function getPrivileges(): array
-    {
-        return [
-            0 => __('role-create.privilege-false'),
-            1 => __('role-create.privilege-true'),
-        ];
-    }
-
-    /**
-     * Xử lý response JSON
-     */
     protected function responseJson(): JsonResponse
     {
         return $this->json([
@@ -127,7 +104,8 @@ class Create extends ControllerAbstract
 
         return $this->page('role.edit', array_merge($this->data(), ['role' => $role]));
     }
-    public function update($id): Response|JsonResponse|RedirectResponse // Thêm RedirectResponse
+
+    public function update($id): Response|JsonResponse|RedirectResponse
     {
         try {
             DB::beginTransaction();
@@ -136,20 +114,32 @@ class Create extends ControllerAbstract
 
             $validator = Validator::make($this->request->all(), [
                 'name' => 'required|string|max:100|unique:roles,name,' . $role->id,
-                'enterprise_id' => 'required|integer|min:1',
                 'description' => 'nullable|string|max:255',
-                'highest_privilege_role' => 'required|integer|min:0|max:3'
+
             ]);
 
             if ($validator->fails()) {
                 throw new \Illuminate\Validation\ValidationException($validator);
             }
 
+            // Tạo alias mới từ name nếu name thay đổi
+            $newAlias = Str::slug($this->request->get('name'));
+            if ($role->name !== $this->request->get('name')) {
+                $originalAlias = $newAlias;
+                $counter = 1;
+
+                while (Model::where('alias', $newAlias)->where('id', '!=', $role->id)->exists()) {
+                    $newAlias = $originalAlias . '-' . $counter;
+                    $counter++;
+                }
+            } else {
+                $newAlias = $role->alias; // Giữ nguyên alias nếu name không thay đổi
+            }
+
             $role->update([
                 'name' => $this->request->get('name'),
-                'enterprise_id' => $this->request->get('enterprise_id'),
                 'description' => $this->request->get('description'),
-                'highest_privilege_role' => $this->request->get('highest_privilege_role'),
+                'alias' => $newAlias, // Cập nhật alias
             ]);
 
             DB::commit();
@@ -181,7 +171,7 @@ class Create extends ControllerAbstract
         }
     }
 
-    public function destroy($id): Response|JsonResponse|RedirectResponse // Thêm RedirectResponse
+    public function destroy($id): Response|JsonResponse|RedirectResponse
     {
         try {
             DB::beginTransaction();
@@ -216,14 +206,14 @@ class Create extends ControllerAbstract
             return redirect()->route('role.index')->withErrors($e->getMessage());
         }
     }
+
     protected function formatRole(Model $role): array
     {
         return [
             'id' => $role->id,
             'name' => $role->name,
-            'enterprise_id' => $role->enterprise_id,
             'description' => $role->description,
-            'highest_privilege_role' => $role->highest_privilege_role,
+            'alias' => $role->alias, // Thêm alias vào response JSON
             'created_at' => $role->created_at ? \Carbon\Carbon::parse($role->created_at)->toDateTimeString() : null,
         ];
     }

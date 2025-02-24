@@ -26,6 +26,7 @@ class Index extends ControllerAbstract
                 'id',
                 'name',
                 'description',
+                'alias', // Thêm alias vào select
                 'created_at',
             ]);
 
@@ -33,11 +34,10 @@ class Index extends ControllerAbstract
             $search = $this->request->get('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%");
+                    ->orWhere('description', 'LIKE', "%{$search}%")
+                    ->orWhere('alias', 'LIKE', "%{$search}%"); // Thêm tìm kiếm theo alias
             });
         }
-
-        // $query->orderBy('id', '');s
 
         return [
             'roles' => $query->paginate($this->request->get('per_page', 10)),
@@ -56,19 +56,16 @@ class Index extends ControllerAbstract
     {
         return Model::query()
             ->enabled()
-            // ->orderBy('id', 'DESC')
             ->get();
     }
 
-    /**
-     * Format role data manually
-     */
     protected function formatRole(Model $role): array
     {
         return [
             'id' => $role->id,
             'name' => $role->name,
             'description' => $role->description,
+            'alias' => $role->alias, // Thêm alias vào response
             'created_at' => $role->created_at->toDateTimeString(),
         ];
     }
