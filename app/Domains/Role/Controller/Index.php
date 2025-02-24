@@ -37,7 +37,7 @@ class Index extends ControllerAbstract
             });
         }
 
-        $query->orderBy('id', 'DESC');
+        // $query->orderBy('id', '');s
 
         return [
             'roles' => $query->paginate($this->request->get('per_page', 10)),
@@ -56,7 +56,7 @@ class Index extends ControllerAbstract
     {
         return Model::query()
             ->enabled()
-            ->orderBy('id', 'DESC')
+            // ->orderBy('id', 'DESC')
             ->get();
     }
 
