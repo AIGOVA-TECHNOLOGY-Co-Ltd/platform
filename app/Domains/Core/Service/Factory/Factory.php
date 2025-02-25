@@ -98,7 +98,7 @@ class Factory
      */
     protected function class(string $folder, ?string $class = null): string
     {
-        return $this->namespace.'\\'.$folder.'\\'.($class ?: $folder);
+        return $this->namespace . '\\' . $folder . '\\' . ($class ?: $folder);
     }
 
     /**
@@ -108,7 +108,7 @@ class Factory
      */
     protected function classFactory(string $name): string
     {
-        return $this->class($name).'Factory';
+        return $this->class($name) . 'Factory';
     }
 
     /**
