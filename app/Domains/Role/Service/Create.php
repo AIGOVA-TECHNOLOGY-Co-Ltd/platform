@@ -4,33 +4,28 @@ namespace App\Domains\Role\Service;
 
 use App\Domains\Role\Model\Role;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str; // Thêm use này
 
 class Create
 {
-    protected array $data;
-
-    public function __construct(array $data)
-    {
-        $this->data = $data;
-    }
+    protected $data;
 
     public static function make(array $data): self
     {
-        return new static($data);
+        $instance = new self();
+        $instance->data = $data;
+        return $instance;
     }
 
     public function validate(): self
     {
         $validator = Validator::make($this->data, [
             'name' => 'required|string|max:100|unique:roles,name',
-            'enterprise_id' => 'required|integer|min:1',
             'description' => 'nullable|string|max:255',
-            'highest_privilege_role' => 'required|integer|min:0|max:3'
         ]);
 
         if ($validator->fails()) {
-            throw new ValidationException($validator);
+            throw new \Illuminate\Validation\ValidationException($validator);
         }
 
         return $this;
@@ -38,11 +33,20 @@ class Create
 
     public function create(): Role
     {
+        // Tạo alias từ name
+        $alias = Str::slug($this->data['name']);
+        $originalAlias = $alias;
+        $counter = 1;
+
+        while (Role::where('alias', $alias)->exists()) {
+            $alias = $originalAlias . '-' . $counter;
+            $counter++;
+        }
+
         return Role::create([
             'name' => $this->data['name'],
-            'enterprise_id' => $this->data['enterprise_id'],
             'description' => $this->data['description'] ?? null,
-            'highest_privilege_role' => $this->data['highest_privilege_role'],
+            'alias' => $alias, // Thêm alias vào bản ghi
         ]);
     }
 }
