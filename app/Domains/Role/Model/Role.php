@@ -69,6 +69,11 @@ class Role extends ModelAbstract
      *
      * @return HasMany
      */
+    public function belongsToEnterprise(int $enterpriseId): bool
+    {
+        return $this->enterprise_id === $enterpriseId;
+    }
+
     public function permissions(): HasMany
     {
         return $this->hasMany(\App\Domains\Permissions\Model\Permission::class, 'role_id');
