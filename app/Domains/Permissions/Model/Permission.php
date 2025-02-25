@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Domains\Role\Model\Role;  // Thêm dòng này
 use App\Domains\Permissions\Model\Action;
-use App\Domains\Permissions\Model\Entity;
-use App\Domains\Permissions\Model\Scope;
 
 class Permission extends Model
 {
@@ -18,10 +16,7 @@ class Permission extends Model
     protected $fillable = [
         'role_id',
         'action_id',
-        'entity_id',
         'enterprise_id',
-        'scope_id',
-        'entity_record_id',
     ];
 
     protected $casts = [
@@ -42,15 +37,6 @@ class Permission extends Model
         return $this->belongsTo(Action::class, 'action_id');
     }
 
-    public function entity()
-    {
-        return $this->belongsTo(Entity::class, 'entity_id');
-    }
-
-    public function scope()
-    {
-        return $this->belongsTo(Scope::class, 'scope_id');
-    }
     public function rolePermissions()
     {
         return $this->hasMany(RolePermission::class);

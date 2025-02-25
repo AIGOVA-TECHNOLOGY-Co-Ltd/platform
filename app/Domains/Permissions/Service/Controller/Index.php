@@ -10,16 +10,6 @@ use App\Domains\Permissions\Model\Permission as Model;
 class Index extends ControllerAbstract
 {
     /**
-     * @var bool
-     */
-    protected bool $userEmpty = true;
-
-    /**
-     * @var bool
-     */
-    protected bool $vehicleEmpty = true;
-
-    /**
      * @param \Illuminate\Http\Request $request
      * @param \Illuminate\Contracts\Auth\Authenticatable $auth
      *
@@ -27,7 +17,7 @@ class Index extends ControllerAbstract
      */
     public function __construct(protected Request $request, protected Authenticatable $auth)
     {
-        $this->data();
+        // Không gọi data() trong constructor
     }
 
     /**
@@ -35,18 +25,25 @@ class Index extends ControllerAbstract
      */
     public function data(): array
     {
-        return $this->dataCore() + [
-            'list' => $this->list(),
-        ];
+        $data = $this->dataCore();
+
+        // Nếu chưa có 'permissions', thêm vào
+        if (!array_key_exists('permissions', $data)) {
+            $data['permissions'] = $this->list();
+        }
+
+        return $data;
     }
 
     /**
      * @return \App\Domains\Permissions\Model\Collection\Permission
      */
-
     public function list(): Collection
     {
-        return new Collection(Model::query()->get()->all());
+        return new Collection(
+            Model::query()
+                ->with(['role', 'action']) // Load các quan hệ cần thiết
+                ->get()
+        );
     }
-
 }
