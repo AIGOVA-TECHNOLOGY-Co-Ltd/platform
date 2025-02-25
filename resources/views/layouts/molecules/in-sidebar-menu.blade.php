@@ -242,33 +242,6 @@
     </ul>
 </li>
 
-{{--start add item Enterprise--}}
-@php ($active = str_starts_with($ROUTE, 'enterprise'))
-<li>
-    <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
-        <div class="side-menu__icon">@icon('briefcase')</div>
-        <div class="side-menu__title">
-            {{ __('in-sidebar.enterprise') }}
-            <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')</div>
-        </div>
-    </a>
-
-    <ul class="{{ $active ? 'side-menu__sub-open' : '' }}">
-        <li>
-            <a href="{{route('enterprise.index')}}" class="side-menu {{ ($ROUTE === 'enterprise.index') ? 'side-menu--active' : '' }}">
-                <div class="side-menu__icon">@icon('list')</div>
-                <div class="side-menu__title">{{ __('in-sidebar.enterprise-index') }}</div>
-            </a>
-        </li>
-        <li>
-            <a href="{{route('enterprise.create')}}" class="side-menu {{ ($ROUTE === 'enterprise.create') ? 'side-menu--active' : '' }}">
-                <div class="side-menu__icon">@icon('plus-circle')</div>
-                <div class="side-menu__title">{{__('in-sidebar.enterprise-create')}}</div>
-            </a>
-        </li>
-    </ul>
-
-{{--end add item Enterprise--}}
 @php ($active = str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
 
     {{--end add item Enterprise--}}
@@ -369,6 +342,34 @@
                 </li>
             </ul>
         </li>
+
+        {{--start add item Enterprise--}}
+        @php ($active = str_starts_with($ROUTE, 'enterprise'))
+        <li>
+            <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
+                <div class="side-menu__icon">@icon('briefcase')</div>
+                <div class="side-menu__title">
+                    {{ __('in-sidebar.enterprise') }}
+                    <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')</div>
+                </div>
+            </a>
+
+            <ul class="{{ $active ? 'side-menu__sub-open' : '' }}">
+                <li>
+                    <a href="{{route('enterprise.index')}}" class="side-menu {{ ($ROUTE === 'enterprise.index') ? 'side-menu--active' : '' }}">
+                        <div class="side-menu__icon">@icon('list')</div>
+                        <div class="side-menu__title">{{ __('in-sidebar.enterprise-index') }}</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('enterprise.create')}}" class="side-menu {{ ($ROUTE === 'enterprise.create') ? 'side-menu--active' : '' }}">
+                        <div class="side-menu__icon">@icon('plus-circle')</div>
+                        <div class="side-menu__title">{{__('in-sidebar.enterprise-create')}}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        {{--end add item Enterprise--}}
     </ul>
 </li>
 
