@@ -41,14 +41,16 @@
                     <div class="text-red-500 mt-1">{{ $errors->first('action_id') }}</div>
                 @endif
             </div>
-
-            <!-- Enterprise (nếu có) -->
+            <!-- Enterprise -->
             <div class="form-group mb-4">
                 <label class="form-label">{{ __('permissions-create.enterprise') }}</label>
-                <select name="enterprise_id">
+                <select name="enterprise_id"
+                    class="form-control form-control-lg {{ $errors->has('enterprise_id') ? 'border-red-500' : '' }}">
                     <option value="">{{ __('permissions-create.select-enterprise') }}</option>
                     @foreach ($enterprises as $enterprise)
-                        <option value="{{ $enterprise['id'] }}">{{ $enterprise['name'] }}</option>
+                        <option value="{{ $enterprise['id'] }}" {{ old('enterprise_id') == $enterprise['id'] ? 'selected' : '' }}>
+                            {{ $enterprise['name'] }}
+                        </option>
                     @endforeach
                 </select>
 
@@ -56,6 +58,7 @@
                     <div class="text-red-500 mt-1">{{ $errors->first('enterprise_id') }}</div>
                 @endif
             </div>
+
 
             <!-- Buttons -->
             <div class="flex justify-end space-x-2 mt-5">

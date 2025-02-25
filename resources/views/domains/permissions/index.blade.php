@@ -17,23 +17,6 @@
                 data-table-search="#permissions-list-table" />
         </div>
 
-        <!-- Chọn user -->
-        @if ($users_multiple)
-            <div class="flex-grow mt-2 lg:mt-0">
-                <x-select name="user_id" :options="$users" value="id" text="name"
-                    placeholder="{{ __('permissions-index.user') }}" data-change-submit>
-                </x-select>
-            </div>
-        @endif
-
-
-        <!-- Bật thông báo -->
-        <button type="button" class="sm:ml-4 mt-2 sm:mt-0 bg-white btn form-control-lg" data-notification-request
-            data-notification-request-granted="{{ __('permissions-index.notifications-granted') }}"
-            data-notification-request-denied="{{ __('permissions-index.notifications-denied') }}">
-            {{ __('permissions-index.notifications-enable') }}
-        </button>
-
         <!-- Nút tạo mới permission -->
         <div class="sm:ml-4 mt-2 sm:mt-0 bg-white">
             <a href="{{ route('permissions.create') }}" class="btn form-control-lg whitespace-nowrap">
@@ -70,9 +53,9 @@
                                 class="block">{{ $permission->user->name ?? '-' }}</a></td>
                     @endif
 
-                    <td class="w-1">{{ $permission->id }}</td>
-                    <td class="w-1">{{ $permission->role->name ?? '-' }}</td>
-                    <td class="w-1">{{ $permission->action->name ?? '-' }}</td>
+                    <td class="w-1">{{ $permission->stt }}</td> <!-- Hiển thị số thứ tự -->
+                    <td class="w-1">{{ $permission->role_name }}</td>
+                    <td class="w-1">{{ $permission->actions }}</td>
                     <td class="w-1" data-table-sort-value="{{ $permission->created_at }}">
                         @dateWithUserTimezone($permission->created_at)
                     </td>

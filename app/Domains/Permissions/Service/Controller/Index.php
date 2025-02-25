@@ -38,12 +38,38 @@ class Index extends ControllerAbstract
     /**
      * @return \App\Domains\Permissions\Model\Collection\Permission
      */
+    // public function list(): Collection
+    // {
+    //     return new Collection(
+    //         Model::query()
+    //             ->with(['role', 'action']) // Load các quan hệ cần thiết
+    //             ->get()
+
+    //     );
+    // }
     public function list(): Collection
     {
-        return new Collection(
-            Model::query()
-                ->with(['role', 'action']) // Load các quan hệ cần thiết
-                ->get()
-        );
+        $permissions = Model::query()
+            ->with(['role', 'action']) // Load quan hệ Role & Action
+            ->get()
+            ->groupBy('role.name'); // Nhóm theo Role Name
+
+        $formattedPermissions = collect();
+        $index = 1; // Bắt đầu số thứ tự từ 1
+
+        foreach ($permissions as $roleName => $groupedPermissions) {
+            $actions = $groupedPermissions->pluck('action.name')->unique()->implode(', '); // Gộp các action thành chuỗi
+
+            $formattedPermissions->push((object) [
+                'stt' => $index++, // Gán số thứ tự
+                'role_name' => $roleName,
+                'actions' => $actions,
+                'created_at' => $groupedPermissions->first()->created_at, // Lấy created_at đầu tiên
+            ]);
+        }
+
+        return new Collection($formattedPermissions);
     }
+
+
 }
