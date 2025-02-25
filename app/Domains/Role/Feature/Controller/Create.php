@@ -6,8 +6,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use App\Domains\Role\Feature\Service\Controller\Create as CreateService;
 use App\Domains\Role\Feature\Model\Feature as Model;
+use App\Domains\CoreApp\Controller\ControllerWebAbstract;
 
-class Create extends ControllerAbstract
+class Create extends ControllerWebAbstract
 {
     protected ?Model $row;
 

@@ -4,16 +4,19 @@ namespace App\Domains\Role\Feature\Service\Controller;
 
 use App\Domains\Role\Feature\Model\Feature;
 use App\Domains\Role\Model\Role;
+use App\Domains\Role\Feature\Action\ActionFactory;
 
 class Create
 {
     protected $request;
     protected $auth;
+    protected $factory;
 
     public function __construct($request, $auth)
     {
         $this->request = $request;
         $this->auth = $auth;
+        $this->factory = new ActionFactory($request, $auth);
     }
 
     public static function new($request, $auth): self
@@ -23,20 +26,14 @@ class Create
 
     public function create(): Feature
     {
-
         $data = $this->request->validate([
             'alias' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+
         ]);
 
-        $feature = Feature::query()->create([
-            'alias' => $data['alias'],
-            'name' => $data['name'],
-            'description' => $data['description'],
-        ]);
-
-        return $feature;
+        return $this->factory->create($data);
     }
 
     public function data(): array

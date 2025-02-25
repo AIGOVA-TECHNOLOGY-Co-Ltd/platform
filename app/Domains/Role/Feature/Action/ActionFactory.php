@@ -9,10 +9,8 @@ class ActionFactory extends ActionFactoryAbstract
 {
     protected ?Model $row;
 
-    public function create(): Model
+    public function create(array $data): Model
     {
-        // Truyền dữ liệu thô từ request thay vì validate ở đây
-        $data = $this->request->only(['alias', 'name', 'description', 'role_id']);
-        return $this->actionHandle(Create::class, $data);
+        return $this->actionHandle(Create::class, $data, $data); // Truyền $data vào $args
     }
 }
