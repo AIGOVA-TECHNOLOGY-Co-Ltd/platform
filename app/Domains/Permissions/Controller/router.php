@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['user-auth'])->group(function () {
     Route::get('/permissions', PermissionIndex::class)->name('permissions.index');
-    Route::get('/permissions/feature', [PermissionIndex::class, 'feature'])->name('permissions.feature.index');
+    // Route::get('/permissions/feature', [PermissionIndex::class, 'feature'])->name('permissions.feature.index');
     // Route::get('/permissions/create', PermissionCreate::class)->name('permissions.create');
     // Route::post('/permissions/store', [PermissionCreate::class, 'store'])->name('permissions.store');
-    Route::get('/permissions/create', PermissionCreate::class)->name('permissions.create');
-    Route::post('/permissions/store', [PermissionCreate::class, 'store'])->name('permissions.store');
-
+    // Route::get('/permissions/create', PermissionCreate::class)->name('permissions.create');
+    // Route::post('/permissions/store', [PermissionCreate::class, 'store'])->name('permissions.store');
+    Route::any('/permissions/create', PermissionCreate::class)->name('permissions.create');
 });

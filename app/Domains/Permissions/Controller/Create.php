@@ -1,136 +1,52 @@
-<?php
-
+<?php declare(strict_types=1);
 namespace App\Domains\Permissions\Controller;
-
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
 use App\Domains\Permissions\Model\Permission as Model;
-use App\Domains\Permissions\Service\Create as CreateService;
-use Illuminate\Support\Facades\DB;
-// use Illuminate\Support\Facades\Validator;
-use App\Domains\Enterprise\Model\Enterprise;
-use App\Domains\Permissions\Model\Action;
+use App\Domains\Permissions\Service\Controller\Create as CreateService;
 
+use Illuminate\Http\Response;
+use App\Domains\CoreApp\Controller\ControllerWebAbstract;
 
-class Create extends ControllerAbstract
+class Create extends ControllerWebAbstract
 {
-    /**
-     * Hiển thị form tạo permission mới
-     */
-    public function __invoke(): Response|JsonResponse
+    private ?Model $row;
+
+    public function __invoke(): Response|RedirectResponse
     {
-        if ($this->request->wantsJson()) {
-            return $this->responseJson();
+        if ($this->request->isMethod('post')) {
+            return $this->create();
         }
 
-        $this->meta('title', __('permissions-create.title'));
-
+        $this->meta('title', __('permissions-create.meta-title'));
         return $this->page('permissions.create', $this->data());
     }
 
-    /**
-     * Xử lý lưu permission mới vào database
-     */
-    public function store(): Response|JsonResponse|RedirectResponse
+    public function data(): array
     {
-        try {
-            DB::beginTransaction();
-
-            $permission = CreateService::make($this->request->all())
-                ->validate()
-                ->create();
-
-            DB::commit();
-
-            $response = [
-                'status' => true,
-                'message' => __('permissions-create.success'),
-                'permission' => $this->formatPermission($permission)
-            ];
-
-            if ($this->request->wantsJson()) {
-                return $this->json($response);
-            }
-
-            return redirect()->route('permissions.index')->with('success', __('permissions-create.success'));
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            $errorResponse = [
-                'status' => false,
-                'message' => $e->getMessage()
-            ];
-
-            if ($this->request->wantsJson()) {
-                return $this->json($errorResponse, 422);
-            }
-
-            return redirect()->back()->withErrors($e->getMessage())->withInput();
-        }
+        return CreateService::new($this->request, $this->auth)->data();
     }
 
-    /**
-     * Lấy dữ liệu cho form tạo permission
-     */
-    protected function data(): array
-    {
-        return [
-            'roles' => $this->getRoles(),
-            'actions' => $this->getActions(),
-            'enterprises' => $this->getEnterprises(),
-            'errors' => session('errors') ?? new \Illuminate\Support\MessageBag(),
-        ];
-    }
+    // protected function create(): RedirectResponse
+    // {
+    //     try {
+    //         DB::beginTransaction();
+    //         $service = CreateService::new($this->request, $this->auth);
+    //         $this->row = $service->create();
+    //         DB::commit();
+    //         $this->sessionMessage('success', __('permissions.success'));
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         $this->sessionMessage('error', __('permissions.error'));
+    //         return redirect()->back()->withInput();
+    //     }
 
-    /**
-     * Lấy danh sách roles
-     */
-    protected function getRoles(): array
+    //     return redirect()->route('permissions.index', $this->data());
+    // }
+    protected function create(): RedirectResponse
     {
-        return \App\Domains\Role\Model\Role::all(['id', 'name'])->toArray();
+        $service = CreateService::new($this->request, $this->auth);
+        $this->row = $service->create();
+        $this->sessionMessage('success', __('permissions-create.success'));
+        return redirect()->route('permissions.index', $this->data());
     }
-
-    /**
-     * Lấy danh sách actions
-     */
-    protected function getActions(): array
-    {
-        return Action::all(['id', 'name'])->toArray();
-    }
-
-    /**
-     * Xử lý response JSON
-     */
-    protected function responseJson(): JsonResponse
-    {
-        return $this->json([
-            'data' => $this->data()
-        ]);
-    }
-
-    /**
-     * Format permission để trả về JSON
-     */
-    protected function formatPermission(Model $permission): array
-    {
-        // $enterprises = $this->getEnterprises();
-        // dd($enterprises);
-        return [
-            'id' => $permission->id,
-            'role_id' => $permission->role_id,
-            'action_id' => $permission->action_id,
-            'enterprise_id' => $permission->enterprise_id,
-            'created_at' => $permission->created_at ? \Carbon\Carbon::parse($permission->created_at)->toDateTimeString() : null,
-        ];
-    }
-
-    /**
-     * Lấy danh sách enterprises
-     */
-    protected function getEnterprises(): array
-    {
-        return Enterprise::select('id', 'name')->get()->toArray();
-    }
-
 }
