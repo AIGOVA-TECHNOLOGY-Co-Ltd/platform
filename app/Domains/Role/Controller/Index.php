@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domains\Role\Controller;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use App\Domains\Role\Model\Role as Model;
+use App\Domains\Role\Service\Controller\Index as ControllerService;
 
 class Index extends ControllerAbstract
 {
+    /**
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
     public function __invoke(): Response|JsonResponse
     {
         if ($this->request->wantsJson()) {
@@ -16,69 +21,28 @@ class Index extends ControllerAbstract
 
         $this->meta('title', __('role-index.meta-title'));
 
-        return $this->page('role.index', $this->data());
-    }
-
-    protected function data(): array
-    {
-        $query = Model::query()
-            ->select([
-                'id',
-                'name',
-                'enterprise_id',
-                'description',
-                'created_at',
-                'highest_privilege_role'
-            ])->where('enterprise_id', auth()->user()->enterprise_id);
-
-        if ($this->request->filled('search')) {
-            $search = $this->request->get('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%");
-            });
-        }
-
-        if ($this->request->filled('enterprise_id')) {
-            $query->byEnterpriseId($this->request->get('enterprise_id'));
-        }
-
-        $query->orderBy('id', 'DESC');
-
-        return [
-            'roles' => $query->paginate($this->request->get('per_page', 10)),
-            'search' => $this->request->get('search')
-        ];
-    }
-
-    protected function responseJson(): JsonResponse
-    {
-        return $this->json([
-            'data' => $this->responseJsonList()->map(fn($role) => $this->formatRole($role))->all()
-        ]);
-    }
-
-    protected function responseJsonList()
-    {
-        return Model::query()
-            ->enabled()
-            ->where('enterprise_id', auth()->user()->enterprise_id)
-            ->orderBy('id', 'DESC')
-            ->get();
+        return $this->page('role.index', $this->getService()->data());
     }
 
     /**
-     * Format role data manually
+     * Get JSON response.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    protected function formatRole(Model $role): array
+    protected function responseJson(): JsonResponse
     {
-        return [
-            'id' => $role->id,
-            'name' => $role->name,
-            'enterprise_id' => $role->enterprise_id,
-            'description' => $role->description,
-            'highest_privilege_role' => $role->highest_privilege_role,
-            'created_at' => $role->created_at->toDateTimeString(),
-        ];
+        return $this->json([
+            'data' => $this->getService()->responseJsonList()->map(fn($role) => $this->getService()->formatRole($role))->all()
+        ]);
+    }
+
+    /**
+     * Get the service instance.
+     *
+     * @return \App\Domains\Role\Service\Controller\Index
+     */
+    protected function getService()
+    {
+        return ControllerService::new($this->request, $this->auth);
     }
 }
