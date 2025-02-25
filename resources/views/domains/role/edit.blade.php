@@ -19,21 +19,16 @@
             @endif
         </div>
 
-        <!-- Enterprise ID -->
+        <!-- Alias (ẩn hoặc read-only nếu tự động tạo) -->
         <div class="form-group mb-4">
-            <label class="form-label required">{{ __('role-create.Enterprise') }}</label>
-            <select name="enterprise_id"
-                class="form-control form-control-lg {{ $errors->has('enterprise_id') ? 'border-red-500' : '' }}"
-                required>
-                <option value="">{{ __('role-create.Select Enterprise') }}</option>
-                @foreach($enterprises as $enterprise)
-                <option value="{{ $enterprise['id'] }}" {{ old('enterprise_id', $role->enterprise_id) == $enterprise['id'] ? 'selected' : '' }}>
-                    {{ $enterprise['name'] }}
-                </option>
-                @endforeach
-            </select>
-            @if($errors->has('enterprise_id'))
-            <div class="text-red-500 mt-1">{{ $errors->first('enterprise_id') }}</div>
+            <label class="form-label">{{ __('role-create.Alias') }}</label>
+            <input type="text"
+                name="alias"
+                class="form-control form-control-lg {{ $errors->has('alias') ? 'border-red-500' : '' }}"
+                value="{{ old('alias', $role->alias) }}"
+                readonly> <!-- Thêm readonly nếu muốn tự động tạo -->
+            @if($errors->has('alias'))
+            <div class="text-red-500 mt-1">{{ $errors->first('alias') }}</div>
             @endif
         </div>
 
@@ -45,23 +40,6 @@
                 rows="3">{{ old('description', $role->description) }}</textarea>
             @if($errors->has('description'))
             <div class="text-red-500 mt-1">{{ $errors->first('description') }}</div>
-            @endif
-        </div>
-
-        <!-- Privilege Level -->
-        <div class="form-group mb-4">
-            <label class="form-label required">{{ __('role-create.Privilege Level') }}</label>
-            <select name="highest_privilege_role"
-                class="form-control form-control-lg {{ $errors->has('highest_privilege_role') ? 'border-red-500' : '' }}"
-                required>
-                @foreach($privileges as $value => $label)
-                <option value="{{ $value }}" {{ old('highest_privilege_role', $role->highest_privilege_role) == $value ? 'selected' : '' }}>
-                    {{ $label }}
-                </option>
-                @endforeach
-            </select>
-            @if($errors->has('highest_privilege_role'))
-            <div class="text-red-500 mt-1">{{ $errors->first('highest_privilege_role') }}</div>
             @endif
         </div>
 
