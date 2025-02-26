@@ -6,7 +6,7 @@ use App\Domains\Role\Feature\Model\Feature;
 use App\Domains\Role\Model\Role;
 use App\Domains\Role\Feature\Action\ActionFactory;
 
-class Create
+class Update
 {
     protected $request;
     protected $auth;
@@ -24,16 +24,15 @@ class Create
         return new self($request, $auth);
     }
 
-    public function create(): Feature
+    public function update(Feature $feature): Feature
     {
         $data = $this->request->validate([
             'alias' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-
         ]);
 
-        return $this->factory->create($data);
+        return $this->factory->update($feature, $data);
     }
 
     public function data(): array

@@ -11,6 +11,18 @@ class ActionFactory extends ActionFactoryAbstract
 
     public function create(array $data): Model
     {
-        return $this->actionHandle(Create::class, $data, $data); // Truyền $data vào $args
+        return $this->actionHandle(Create::class, $data, $data);
+    }
+
+    public function update(Model $feature, array $data): Model
+    {
+        $this->row = $feature;
+        return $this->actionHandle(Update::class, $data, $data);
+    }
+
+    public function delete(Model $feature): void
+    {
+        $this->row = $feature;
+        $this->actionHandle(Delete::class);
     }
 }
