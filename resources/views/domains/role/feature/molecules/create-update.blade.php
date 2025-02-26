@@ -2,21 +2,21 @@
     <div class="p-2">
         <label for="feature-name" class="form-label">{{ __('role-feature-create.name') }}</label>
         <input type="text" name="name" class="form-control form-control-lg" id="feature-name"
-            value="{{ old('name', request()->input('name')) }}" required>
+            value="{{ old('name', $row->name ?? request()->input('name')) }}" required>
 
     </div>
 
     <div class="p-2">
         <label for="feature-alias" class="form-label">{{ __('role-feature-create.alias') }}</label>
         <input type="text" name="alias" class="form-control form-control-lg" id="feature-alias"
-            value="{{ old('alias', request()->input('alias')) }}" readonly required>
+            value="{{ old('alias', $row->alias ?? request()->input('alias')) }}" readonly required>
 
     </div>
 
     <div class="p-2">
         <label for="feature-description" class="form-label">{{ __('role-feature-create.description') }}</label>
         <input type="text" name="description" class="form-control form-control-lg" id="feature-description"
-            value="{{ old('description', request()->input('description')) }}">
+            value="{{ old('description', $row->description ?? request()->input('description')) }}">
 
     </div>
 </div>
