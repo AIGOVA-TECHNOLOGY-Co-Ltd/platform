@@ -17,3 +17,5 @@
 *.sh
 
 /.idea/*
+/.git/*
+/.git-old/*
