@@ -5,8 +5,7 @@
 <div class="box flex items-center px-20 py-6">
     <div class="nav nav-tabs flex overflow-auto whitespace-nowrap" role="tablist">
         <a href="{{ route('permissions.edit', ['role_id' => $row->role_id ?? 0]) }}"
-            class="p-4 {{ ($ROUTE === 'permissions.edit') ? 'active' : '' }}"
-            role="tab">
+            class="p-4 {{ ($ROUTE === 'permissions.edit') ? 'active' : '' }}" role="tab">
             {{ 'Edit Permission ' . $row->role->name ?? 'Permission for Role #' . ($row->role_id ?? 'Unknown') }}
         </a>
     </div>
@@ -49,17 +48,18 @@
                 @csrf
                 @method('PUT')
 
-                <!-- Action checkboxes -->
+                <!-- Action switches -->
                 <div class="form-group">
                     <label class="block font-semibold text-gray-700 mb-1">Actions</label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-1">
                         @foreach ($actions as $action)
-                            <label class="flex items-center space-x-8 p-5 bg-gray-50 rounded-md hover:bg-gray-100">
-                                    <input type="checkbox" name="actions[]" value="{{ $action['id'] }}"
-                                        {{ in_array($action['id'], $selected_actions) ? 'checked' : '' }}
-                                        class="form-checkbox h-5 w-5 text-blue-600 accent-blue-600">
-                                    <span class="text-gray-800">{{ $action['name'] }}</span>
+                            <div class="form-check p-2">
+                                <input type="checkbox" name="actions[]" value="{{ $action['id'] }}"
+                                    class="form-check-switch" id="action-{{ $action['id'] }}" {{ in_array($action['id'], $selected_actions) ? 'checked' : '' }}>
+                                <label class="form-check-label text-gray-800" for="action-{{ $action['id'] }}">
+                                    {{ $action['name'] }}
                                 </label>
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -88,15 +88,71 @@
             /* Tăng khoảng cách giữa các phần */
         }
 
-        .form-checkbox {
-            border: 1px solid #d2d6de;
-            border-radius: 0.25rem;
+        /* Toggle switch styles */
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
+        .form-check-switch {
+            display: none;
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Custom toggle switch styling */
+        .form-check-switch+.form-check-label::before {
+            content: '';
+            display: inline-block;
+            width: 2.5rem;
+            /* Width of the switch */
+            height: 1.25rem;
+            /* Height of the switch */
+            background-color: #d1d5db;
+            /* Gray when unchecked */
+            border-radius: 9999px;
+            /* Fully rounded */
+            position: relative;
+            transition: background-color 0.3s;
+        }
+
+        .form-check-switch+.form-check-label::after {
+            content: '';
+            display: inline-block;
+            width: 1rem;
+            /* Width of the knob */
+            height: 1rem;
+            /* Height of the knob */
+            background-color: white;
+            border-radius: 9999px;
+            /* Fully rounded */
+            position: absolute;
+            top: 0.125rem;
+            /* Offset from top */
+            left: 0.125rem;
+            /* Offset from left */
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-check-switch:checked+.form-check-label::before {
+            background-color: #3b82f6;
+            /* Blue when checked, matching your theme */
+        }
+
+        .form-check-switch:checked+.form-check-label::after {
+            transform: translateX(1.25rem);
+            /* Move the knob to the right */
+        }
+
+        /* Existing styles remain the same */
         .btn-primary,
         .btn-secondary {
             padding: 0.5rem 1rem;
-            /* Điều chỉnh padding */
             font-size: 1rem;
         }
 

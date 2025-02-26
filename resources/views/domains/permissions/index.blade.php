@@ -41,12 +41,13 @@
                 <th class="w-1">{{ __('Role Name') }}</th>
                 <th class="w-1">{{ __('Action') }}</th>
                 <th class="w-1">{{ __('Created At') }}</th>
+                <th class="w-1">{{ __('Actions') }}</th>
             </tr>
         </thead>
 
         <tbody>
             @foreach ($permissions as $permission)
-            @php ($link = route('permissions.edit', ['role_id' => $permission->role_id]))          <!-- Sử dụng role_id thay vì id -->
+            @php ($link = route('permissions.edit', ['role_id' => $permission->role_id]))            <!-- Sử dụng role_id thay vì id -->
             <tr>
                 @if ($user_empty)
                     <td><a href="{{ $link }}" class="block">{{ $permission->user->name ?? '-' }}</a></td>
@@ -56,6 +57,23 @@
                 <td class="w-1"><a href="{{ $link }}">{{ $permission->actions }}</a></td>
                 <td class="w-1" data-table-sort-value="{{ $permission->created_at }}">
                     <a href="{{ $link }}">@dateWithUserTimezone($permission->created_at)</a>
+                </td>
+                <td class="w-1">
+                    <!-- Edit permission -->
+                    <a href="{{ route('permissions.edit', ['role_id' => $permission->role_id]) }}"
+                        class="btn btn-primary btn-sm">
+                        {{ __('Edit') }}
+                    </a>
+                    <!-- Form xóa permission -->
+                    <form action="{{ route('permissions.delete', ['role_id' => $permission->role_id]) }}" method="POST"
+                        style="display:inline;"
+                        onsubmit="return confirm('Are you sure you want to delete this permission?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            {{ __('Delete') }}
+                        </button>
+                    </form>
                 </td>
             </tr>
             @endforeach

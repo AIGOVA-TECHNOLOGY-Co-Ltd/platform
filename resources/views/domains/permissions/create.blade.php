@@ -4,6 +4,13 @@
 
 @section('body')
     <div class="intro-y box p-5">
+        <!-- Alert Success -->
+        @if(session('success'))
+            <div class="alert alert-success mb-4 p-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('permissions.create') }}">
             @csrf
             <input type="hidden" name="_action" value="create" />

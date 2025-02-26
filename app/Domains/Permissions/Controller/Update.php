@@ -12,22 +12,6 @@ use Illuminate\Support\MessageBag;
 class Update extends ControllerWebAbstract
 {
 
-    // public function edit(int $role_id): Response
-    // {
-    //     $row = Model::with('role')->where('role_id', $role_id)->firstOrFail();
-    //     $permissions = Model::where('role_id', $role_id)->get();
-
-    //     $actions = \App\Domains\Permissions\Model\Action::all(['id', 'name'])->toArray();
-
-    //     $this->meta('title', __('permissions-update.meta-title'));
-    //     return $this->page('permissions.edit', [
-    //         'row' => $row,
-    //         'permissions' => $permissions,
-    //         'actions' => $actions,
-    //         'errors' => session('errors') ?? new MessageBag(),
-    //         'selected_actions' => $permissions->pluck('action_id')->unique()->toArray(),
-    //     ]);
-    // }
     public function edit(int $role_id): Response
     {
         $row = Model::with('role')->where('role_id', $role_id)->firstOrFail();
