@@ -21,7 +21,6 @@ class Permission extends ModelAbstract
         'role_id',
         'action_id',
     ];
-
     protected $casts = [
         'created_at' => 'datetime',
         'value' => 'integer',
