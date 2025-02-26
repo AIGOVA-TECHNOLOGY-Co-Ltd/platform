@@ -1,25 +1,28 @@
 <!doctype html>
 <html dir="{{ app('language')->rtl ? 'rtl' : 'ltr' }}" lang="{{ app()->getLocale() }}">
-    <head>
-        @include ('layouts.molecules.head')
-    </head>
 
-    <body class="main body-{{ str_replace('.', '-', $ROUTE) }} authenticated">
-        @include ('layouts.molecules.in-sidebar-mobile')
+<head>
+    @include ('layouts.molecules.head')
+</head>
 
-        <div class="wrapper">
-            <div class="wrapper-box">
-                @include ('layouts.molecules.in-sidebar')
+<body class="main body-{{ str_replace('.', '-', $ROUTE) }} authenticated">
+    @include ('layouts.molecules.in-sidebar-mobile')
 
-                <div class="content py-5 md:px-10 md:py-8">
-                    <x-message type="error" />
-                    <x-message type="success" />
+    <div class="wrapper">
+        <div class="wrapper-box">
+            @include ('layouts.molecules.in-sidebar')
 
-                    @yield ('body')
-                </div>
+            <div class="content py-5 md:px-10 md:py-8">
+                <x-message type="error" />
+                <x-message type="success" />
+
+                @yield ('body')
             </div>
         </div>
+    </div>
 
-        @include ('layouts.molecules.footer')
-    </body>
+    @include ('layouts.molecules.footer')
+    @stack('scripts') <!-- Thêm dòng này -->
+</body>
+
 </html>
