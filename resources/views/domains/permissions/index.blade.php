@@ -41,26 +41,23 @@
                 <th class="w-1">{{ __('Role Name') }}</th>
                 <th class="w-1">{{ __('Action') }}</th>
                 <th class="w-1">{{ __('Created At') }}</th>
-
             </tr>
         </thead>
 
         <tbody>
             @foreach ($permissions as $permission)
-                <tr>
-                    @if ($user_empty)
-                        <td><a href="{{ route('permissions.edit', $permission->id) }}"
-                                class="block">{{ $permission->user->name ?? '-' }}</a></td>
-                    @endif
-
-                    <td class="w-1">{{ $permission->stt }}</td> <!-- Hiển thị số thứ tự -->
-                    <td class="w-1">{{ $permission->role_name }}</td>
-                    <td class="w-1">{{ $permission->actions }}</td>
-                    <td class="w-1" data-table-sort-value="{{ $permission->created_at }}">
-                        @dateWithUserTimezone($permission->created_at)
-                    </td>
-
-                </tr>
+            @php ($link = route('permissions.edit', ['role_id' => $permission->role_id]))          <!-- Sử dụng role_id thay vì id -->
+            <tr>
+                @if ($user_empty)
+                    <td><a href="{{ $link }}" class="block">{{ $permission->user->name ?? '-' }}</a></td>
+                @endif
+                <td class="w-1"><a href="{{ $link }}">{{ $permission->stt }}</a></td>
+                <td class="w-1"><a href="{{ $link }}">{{ $permission->role_name }}</a></td>
+                <td class="w-1"><a href="{{ $link }}">{{ $permission->actions }}</a></td>
+                <td class="w-1" data-table-sort-value="{{ $permission->created_at }}">
+                    <a href="{{ $link }}">@dateWithUserTimezone($permission->created_at)</a>
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>

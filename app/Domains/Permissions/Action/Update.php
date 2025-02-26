@@ -1,23 +1,32 @@
 <?php declare(strict_types=1);
 
-namespace App\Domains\Maintenance\Action;
+namespace App\Domains\Permissions\Action;
 
-class Update extends CreateUpdateAbstract
+use App\Domains\Permissions\Model\Permission as Model;
+
+class Update extends ActionAbstract
 {
-    /**
-     * @return void
-     */
-    protected function save(): void
-    {
-        $this->row->date_at = $this->data['date_at'];
-        $this->row->name = $this->data['name'];
-        $this->row->workshop = $this->data['workshop'];
-        $this->row->amount = $this->data['amount'];
-        $this->row->distance = $this->data['distance'];
-        $this->row->distance_next = $this->data['distance_next'];
-        $this->row->description = $this->data['description'];
-        $this->row->vehicle_id = $this->data['vehicle_id'];
+    protected array $data;
+    protected Model $permission;
 
-        $this->row->save();
+    public function __construct(Model $permission)
+    {
+        $this->permission = $permission;
+    }
+
+    public function handle(array $data): Model
+    {
+        $this->data = $data;
+        return $this->updatePermission();
+    }
+
+    protected function updatePermission(): Model
+    {
+        $this->permission->update([
+            'role_id' => $this->data['role_id'],
+            'action_id' => $this->data['action_id'],
+        ]);
+
+        return $this->permission;
     }
 }

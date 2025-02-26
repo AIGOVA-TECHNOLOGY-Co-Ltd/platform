@@ -1,69 +1,56 @@
 <?php declare(strict_types=1);
 
-namespace App\Domains\Maintenance\Controller;
+namespace App\Domains\Permissions\Controller;
 
 use Illuminate\Http\RedirectResponse;
+use App\Domains\Permissions\Model\Permission as Model;
+use App\Domains\Permissions\Service\Controller\Update as UpdateService;
 use Illuminate\Http\Response;
-use App\Domains\Maintenance\Service\Controller\Update as ControllerService;
+use App\Domains\CoreApp\Controller\ControllerWebAbstract;
+use Illuminate\Support\MessageBag;
 
-class Update extends ControllerAbstract
+class Update extends ControllerWebAbstract
 {
-    /**
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     */
-    public function __invoke(int $id): Response|RedirectResponse
+
+    // public function edit(int $role_id): Response
+    // {
+    //     $row = Model::with('role')->where('role_id', $role_id)->firstOrFail();
+    //     $permissions = Model::where('role_id', $role_id)->get();
+
+    //     $actions = \App\Domains\Permissions\Model\Action::all(['id', 'name'])->toArray();
+
+    //     $this->meta('title', __('permissions-update.meta-title'));
+    //     return $this->page('permissions.edit', [
+    //         'row' => $row,
+    //         'permissions' => $permissions,
+    //         'actions' => $actions,
+    //         'errors' => session('errors') ?? new MessageBag(),
+    //         'selected_actions' => $permissions->pluck('action_id')->unique()->toArray(),
+    //     ]);
+    // }
+    public function edit(int $role_id): Response
     {
-        $this->row($id);
+        $row = Model::with('role')->where('role_id', $role_id)->firstOrFail();
+        $permissions = Model::where('role_id', $role_id)->get();
 
-        if ($response = $this->actions()) {
-            return $response;
-        }
+        $actions = \App\Domains\Permissions\Model\Action::all(['id', 'name'])->toArray();
 
-        $this->meta('title', __('maintenance-update.meta-title', ['title' => $this->row->name]));
-
-        return $this->page('maintenance.update', $this->data());
+        $this->meta('title', __('permissions-update.meta-title'));
+        return $this->page('permissions.edit', [
+            'row' => $row,
+            'permissions' => $permissions,
+            'actions' => $actions,
+            'errors' => session('errors') ?? new MessageBag(),
+            'selected_actions' => $permissions->pluck('action_id')->unique()->toArray(),
+        ]);
     }
 
-    /**
-     * @return array
-     */
-    protected function data(): array
+    public function update(int $role_id): RedirectResponse
     {
-        return ControllerService::new($this->request, $this->auth, $this->row)->data();
-    }
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse|false|null
-     */
-    protected function actions(): RedirectResponse|false|null
-    {
-        return $this->actionPost('update')
-            ?: $this->actionPost('delete');
-    }
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function update(): RedirectResponse
-    {
-        $this->action()->update();
-
-        $this->sessionMessage('success', __('maintenance-update.success'));
-
-        return redirect()->route('maintenance.update', $this->row->id);
-    }
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function delete(): RedirectResponse
-    {
-        $this->action()->delete();
-
-        $this->sessionMessage('success', __('maintenance-update.delete-success'));
-
-        return redirect()->route('maintenance.index');
+        $row = Model::where('role_id', $role_id)->firstOrFail();
+        $service = UpdateService::new($this->request, $this->auth, $row);
+        $service->update();
+        $this->sessionMessage('success', __('permissions-update.success'));
+        return redirect()->route('permissions.index');
     }
 }

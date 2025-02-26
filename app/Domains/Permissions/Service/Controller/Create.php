@@ -1,52 +1,4 @@
-<?php
-
-// namespace App\Domains\Permissions\Service;
-
-// use App\Domains\Permissions\Model\Permission;
-// use Illuminate\Support\Facades\Validator;
-// use Illuminate\Validation\ValidationException;
-
-
-// class Create
-// {
-//     protected array $data;
-
-//     public function __construct(array $data)
-//     {
-//         $this->data = $data;
-//     }
-
-//     public static function make(array $data): self
-//     {
-//         return new static($data);
-//     }
-
-//     public function validate(): self
-//     {
-//         $validator = Validator::make($this->data, [
-//             'role_id' => 'required|exists:roles,id',
-//             'action_id' => 'required|exists:actions,id',
-//             'enterprise_id' => 'nullable|integer',
-//         ]);
-
-//         if ($validator->fails()) {
-//             throw new ValidationException($validator);
-//         }
-
-//         return $this;
-//     }
-
-//     public function create(): Permission
-//     {
-//         return Permission::create([
-//             'role_id' => $this->data['role_id'],
-//             'action_id' => $this->data['action_id'],
-//             'enterprise_id' => $this->data['enterprise_id'] ?? null,
-//         ]);
-//     }
-// }
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Domains\Permissions\Service\Controller;
 
@@ -80,24 +32,16 @@ class Create
         $data = $this->request->validate([
             'role_id' => 'required|exists:roles,id',
             'action_id' => 'required|exists:actions,id',
-            // 'enterprise_id' => 'nullable|exists:enterprises,id',
         ]);
 
         return $this->factory->create($data);
     }
 
-    // public function data(): array
-    // {
-    //     return [
-    //         'roles' => Role::all(),
-    //     ];
-    // }
     public function data(): array
     {
         return [
             'roles' => $this->getRoles(),
             'actions' => $this->getActions(),
-            // 'enterprises' => $this->getEnterprises(),
             'errors' => session('errors') ?? new \Illuminate\Support\MessageBag(),
         ];
     }

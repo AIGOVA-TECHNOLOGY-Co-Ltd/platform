@@ -25,23 +25,6 @@ class Create extends ControllerWebAbstract
     {
         return CreateService::new($this->request, $this->auth)->data();
     }
-
-    // protected function create(): RedirectResponse
-    // {
-    //     try {
-    //         DB::beginTransaction();
-    //         $service = CreateService::new($this->request, $this->auth);
-    //         $this->row = $service->create();
-    //         DB::commit();
-    //         $this->sessionMessage('success', __('permissions.success'));
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         $this->sessionMessage('error', __('permissions.error'));
-    //         return redirect()->back()->withInput();
-    //     }
-
-    //     return redirect()->route('permissions.index', $this->data());
-    // }
     protected function create(): RedirectResponse
     {
         $service = CreateService::new($this->request, $this->auth);
