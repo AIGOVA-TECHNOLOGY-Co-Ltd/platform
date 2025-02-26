@@ -31,8 +31,6 @@
                 'title' => __('role-feature-update.delete-title'),
                 'message' => __('role-feature-update.delete-message'),
                 'route' => route('role.feature.delete', $row->id),
-                'action' => 'delete',
-                'method' => 'delete'
             ])
         </div>
     </div>

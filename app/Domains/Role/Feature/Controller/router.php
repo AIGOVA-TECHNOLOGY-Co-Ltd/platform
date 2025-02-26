@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['user-auth']], function () {
     Route::get('/role/feature', FeatureIndex::class)
         ->name('role.feature.index');
+    // ->middleware('user.role.feature.access:role-feature');
 
     Route::match(['get', 'post'], '/role/feature/create', FeatureCreate::class)
         ->name('role.feature.create');

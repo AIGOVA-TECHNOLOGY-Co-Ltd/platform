@@ -4,10 +4,7 @@
             <div class="modal-body p-0">
                 <form action="{{ $route ?? '' }}" method="post">
                     @csrf
-                    @if(isset($method) && strtolower($method) === 'delete')
-                        @method('DELETE') <!-- Chỉ chuyển sang DELETE khi $method='delete' -->
-                    @endif
-                    <input type="hidden" name="_action" value="{{ $action ?? 'delete' }}" />
+                    <input type="hidden" name="_method" value="{{ $action ?? 'delete' }}" />
 
                     <div class="p-5 text-center">
                         @icon('x-circle', 'w-16 h-16 text-theme-24 mx-auto mt-3')
