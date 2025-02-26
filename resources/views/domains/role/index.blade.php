@@ -27,6 +27,7 @@
                 <th class="w-1">{{ __('role-index.ID') }}</th>
                 <th class="text-left w-1">{{ __('role-index.Name') }}</th>
                 <th class="text-left w-1">{{ __('role-index.Description') }}</th>
+                <th class="w-1">{{ __('role-index.Feature Names') }}</th>
                 <th class="w-1">{{ __('role-index.Created At') }}</th>
                 <th class="w-1">{{ __('role-index.Actions') }}</th>
             </tr>
@@ -35,17 +36,18 @@
         <tbody>
             @forelse($roles as $role)
             <tr>
-                <td>{{ $role->id }}</td>
-                <td class="text-left">{{ $role->name }}</td>
-                <td class="text-left">{{ $role->description }}</td>
-                <td data-table-sort-value="{{ $role->created_at }}">
-                    {{ \Carbon\Carbon::parse($role->created_at)->format('d/m/Y H:i') }}
+                <td>{{ $role['id'] }}</td>
+                <td class="text-left">{{ $role['name'] }}</td> >
+                <td class="text-left">{{ $role['description'] }}</td>
+                <td class="text-left">{{ implode(', ', $role['feature_names'] ?? []) }}</td>
+                <td data-table-sort-value="{{ $role['created_at'] }}">
+                    {{ \Carbon\Carbon::parse($role['created_at'])->format('d/m/Y H:i') }}
                 </td>
                 <td>
-                    <a href="{{ route('role.edit', $role->id) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('role.edit', $role['id']) }}" class="btn btn-primary btn-sm">
                         {{ __('role-index.Edit') }}
                     </a>
-                    <form action="{{ route('role.destroy', $role->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('{{ __('role-delete.confirm') }}');">
+                    <form action="{{ route('role.destroy', $role['id']) }}" method="POST" style="display:inline;" onsubmit="return confirm('{{ __('role-delete.confirm') }}');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm">
@@ -56,7 +58,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center">
+                <td colspan="6" class="text-center">
                     {{ __('role-index.No data available') }}
                 </td>
             </tr>
