@@ -9,4 +9,5 @@ return [
     'Save' => 'Save',
     'privilege-false' => 'False',
     'privilege-true' => 'True',
+    'Alias' => 'Alias',
 ];
