@@ -39,7 +39,7 @@ class Create
     public function data(): array
     {
         return [
-            'roles' => Role::all(),
+            'features' => Feature::all(),
         ];
     }
 }

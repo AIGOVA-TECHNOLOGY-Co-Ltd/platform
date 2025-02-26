@@ -5,8 +5,8 @@
 <form method="get">
     <div class="sm:flex sm:space-x-4">
         <div class="flex-grow mt-2 sm:mt-0">
-            <input type="search" class="form-control form-control-lg" placeholder="{{ __('role-index.filter') }}"
-                data-table-search="#role-list-table" />
+            <input type="search" class="form-control form-control-lg"
+                placeholder="{{ __('role-feature-index.filter') }}" data-table-search="#role-list-table" />
         </div>
     </div>
 </form>

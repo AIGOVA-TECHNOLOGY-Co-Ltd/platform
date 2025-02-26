@@ -19,4 +19,10 @@ class ActionFactory extends ActionFactoryAbstract
         $this->row = $feature;
         return $this->actionHandle(Update::class, $data, $data);
     }
+
+    public function delete(Model $feature): void
+    {
+        $this->row = $feature;
+        $this->actionHandle(Delete::class);
+    }
 }

@@ -21,13 +21,14 @@ class Update extends ControllerWebAbstract
         }
 
         $this->meta('title', __('role-feature-update.meta-title'));
-        return $this->page('role.feature.update', $this->data());
+        return $this->page('role.feature.update', $this->data()); // Đảm bảo tên view đúng
     }
 
     protected function data(): array
     {
         return array_merge(
             ['row' => $this->row],
+            ['can_be_deleted' => $this->canBeDeleted()],
             UpdateService::new($this->request, $this->auth)->data()
         );
     }
@@ -38,5 +39,10 @@ class Update extends ControllerWebAbstract
         $this->row = $service->update($this->row);
         $this->sessionMessage('success', __('role-feature-update.success'));
         return redirect()->route('role.feature.index');
+    }
+
+    protected function canBeDeleted(): bool
+    {
+        return true; // Điều kiện xóa tùy logic của bạn
     }
 }

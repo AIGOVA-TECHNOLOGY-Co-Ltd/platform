@@ -13,10 +13,27 @@
 
                 <div class="box p-5 mt-5">
                     <div class="text-right">
-                        <button type="submit" class="btn btn-primary">{{ __('role-feature-update.update') }}</button>
+                        @if ($can_be_deleted)
+                            <a href="javascript:;" data-dismiss="modal" data-toggle="modal" data-target="#delete-modal"
+                                class="btn btn-outline-danger mr-5">
+                                {{ __('role-feature-update.delete-button') }}
+                            </a>
+                        @endif
+
+                        <button type="submit" class="btn btn-primary" data-click-one>
+                            {{ __('role-feature-update.update') }}
+                        </button>
                     </div>
                 </div>
             </form>
+
+            @includeWhen($can_be_deleted, 'molecules.delete-modal', [
+                'title' => __('role-feature-update.delete-title'),
+                'message' => __('role-feature-update.delete-message'),
+                'route' => route('role.feature.delete', $row->id),
+                'action' => 'delete',
+                'method' => 'delete'
+            ])
         </div>
     </div>
 

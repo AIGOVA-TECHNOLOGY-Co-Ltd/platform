@@ -10,4 +10,8 @@
     'created' => 'Created',
     'success' => 'Successfully',
     'update' => 'Update',
+    'delete-button' => 'Delete',
+    'delete-message' => 'Deleting a feature will also delete feature.',
+    'delete-success' => 'The feature has been deleted successfully',
+    'delete-title' => 'Delete Feature',
 ];

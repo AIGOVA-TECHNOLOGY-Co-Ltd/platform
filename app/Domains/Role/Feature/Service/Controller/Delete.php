@@ -3,10 +3,9 @@
 namespace App\Domains\Role\Feature\Service\Controller;
 
 use App\Domains\Role\Feature\Model\Feature;
-use App\Domains\Role\Model\Role;
 use App\Domains\Role\Feature\Action\ActionFactory;
 
-class Update
+class Delete
 {
     protected $request;
     protected $auth;
@@ -24,21 +23,8 @@ class Update
         return new self($request, $auth);
     }
 
-    public function update(Feature $feature): Feature
+    public function delete(Feature $feature): void
     {
-        $data = $this->request->validate([
-            'alias' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        return $this->factory->update($feature, $data);
-    }
-
-    public function data(): array
-    {
-        return [
-            'features' => Feature::all(),
-        ];
+        $this->factory->delete($feature);
     }
 }
