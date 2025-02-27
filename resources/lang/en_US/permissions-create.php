@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'meta-title' => 'Create New Permission',
     'title' => 'Create New Permission',
     'name' => 'Permission Name',
     'role' => 'Select Role',
