@@ -19,7 +19,7 @@
 
         <!-- Nút tạo mới permission -->
         <div class="sm:ml-4 mt-2 sm:mt-0 bg-white">
-            <a href="{{ route('permissions.create') }}" class="btn form-control-lg whitespace-nowrap">
+            <a href="{{ route('user.permissions.create') }}" class="btn form-control-lg whitespace-nowrap">
                 {{ __('permissions-index.create') }}
             </a>
         </div>
@@ -47,7 +47,7 @@
 
         <tbody>
             @foreach ($permissions as $permission)
-            @php ($link = route('permissions.edit', ['role_id' => $permission->role_id]))            <!-- Sử dụng role_id thay vì id -->
+            @php ($link = route('user.permissions.edit', ['role_id' => $permission->role_id]))            <!-- Sử dụng role_id thay vì id -->
             <tr>
                 @if ($user_empty)
                     <td><a href="{{ $link }}" class="block">{{ $permission->user->name ?? '-' }}</a></td>
@@ -60,13 +60,13 @@
                 </td>
                 <td class="w-1">
                     <!-- Edit permission -->
-                    <a href="{{ route('permissions.edit', ['role_id' => $permission->role_id]) }}"
+                    <a href="{{ route('user.permissions.edit', ['role_id' => $permission->role_id]) }}"
                         class="btn btn-primary btn-sm">
                         {{ __('Edit') }}
                     </a>
                     <!-- Form xóa permission -->
-                    <form action="{{ route('permissions.delete', ['role_id' => $permission->role_id]) }}" method="POST"
-                        style="display:inline;"
+                    <form action="{{ route('user.permissions.delete', ['role_id' => $permission->role_id]) }}"
+                        method="POST" style="display:inline;"
                         onsubmit="return confirm('Are you sure you want to delete this permission?');">
                         @csrf
                         @method('DELETE')

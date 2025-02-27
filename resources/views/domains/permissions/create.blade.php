@@ -11,7 +11,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('permissions.create') }}">
+        <form method="POST" action="{{ route('user.permissions.create') }}">
             @csrf
             <input type="hidden" name="_action" value="create" />
 
@@ -45,7 +45,7 @@
 
             <!-- Buttons -->
             <div class="flex justify-end space-x-2 mt-5">
-                <a href="{{ route('permissions.index') }}" class="btn bg-white">
+                <a href="{{ route('user.permissions.index') }}" class="btn bg-white">
                     {{ __('common.Cancel') }}
                 </a>
                 <button type="submit" class="btn btn-primary">

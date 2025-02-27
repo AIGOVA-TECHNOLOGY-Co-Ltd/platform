@@ -242,10 +242,10 @@
     </ul>
 </li>
 
-    {{--end add item Enterprise--}}
-    @if ($AUTH->adminMode())
+{{--end add item Enterprise--}}
+@if ($AUTH->adminMode())
 
-    @php ($active = str_starts_with($ROUTE, 'user') || str_starts_with($ROUTE, 'ip-lock.') || str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
+@php ($active = str_starts_with($ROUTE, 'user') || str_starts_with($ROUTE, 'ip-lock.') || str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
 
 <li>
     <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
@@ -364,19 +364,22 @@
                 <div class="side-menu__icon">@icon('briefcase')</div>
                 <div class="side-menu__title">
                     {{ __('in-sidebar.enterprise') }}
-                    <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')</div>
+                    <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')
+                    </div>
                 </div>
             </a>
 
             <ul class="{{ $active ? 'side-menu__sub-open' : '' }}">
                 <li>
-                    <a href="{{route('enterprise.index')}}" class="side-menu {{ ($ROUTE === 'enterprise.index') ? 'side-menu--active' : '' }}">
+                    <a href="{{route('enterprise.index')}}"
+                        class="side-menu {{ ($ROUTE === 'enterprise.index') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('list')</div>
                         <div class="side-menu__title">{{ __('in-sidebar.enterprise-index') }}</div>
                     </a>
                 </li>
                 <li>
-                    <a href="{{route('enterprise.create')}}" class="side-menu {{ ($ROUTE === 'enterprise.create') ? 'side-menu--active' : '' }}">
+                    <a href="{{route('enterprise.create')}}"
+                        class="side-menu {{ ($ROUTE === 'enterprise.create') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('plus-circle')</div>
                         <div class="side-menu__title">{{__('in-sidebar.enterprise-create')}}</div>
                     </a>
@@ -384,39 +387,41 @@
             </ul>
         </li>
         {{--end add item Enterprise--}}
+
+        {{--start permissions--}}
+        @php ($active = str_starts_with($ROUTE, 'user.permissions.'))
+        <li>
+            <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
+                <div class="side-menu__icon">@icon('shield')</div>
+                <div class="side-menu__title">
+                    {{ __('in-sidebar.permissions') }}
+                    <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')
+                    </div>
+                </div>
+            </a>
+
+            <ul class="{{ $active ? 'side-menu__sub-open' : '' }}">
+                <li>
+                    <a href="{{ route('user.permissions.index') }}"
+                        class="side-menu {{ ($ROUTE === 'user.permissions.index') ? 'side-menu--active' : '' }}">
+                        <div class="side-menu__icon">@icon('list')</div>
+                        <div class="side-menu__title">{{ __('in-sidebar.permissions-index') }}</div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('user.permissions.create') }}"
+                        class="side-menu {{ ($ROUTE === 'user.permissions.create') ? 'side-menu--active' : '' }}">
+                        <div class="side-menu__icon">@icon('plus-circle')</div>
+                        <div class="side-menu__title">{{ __('in-sidebar.permissions-create') }}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        {{--end permissions--}}
+
     </ul>
 </li>
-
-@php ($active = str_starts_with($ROUTE, 'permissions.'))
-
-<li>
-    <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
-        <div class="side-menu__icon">@icon('shield')</div>
-        <div class="side-menu__title">
-            {{ __('in-sidebar.permissions') }}
-            <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')</div>
-        </div>
-    </a>
-
-    <ul class="{{ $active ? 'side-menu__sub-open' : '' }}">
-        <li>
-            <a href="{{ route('permissions.index') }}"
-                class="side-menu {{ ($ROUTE === 'permissions.index') ? 'side-menu--active' : '' }}">
-                <div class="side-menu__icon">@icon('list')</div>
-                <div class="side-menu__title">{{ __('in-sidebar.permissions-index') }}</div>
-            </a>
-        </li>
-
-        <li>
-            <a href="{{ route('permissions.create') }}"
-                class="side-menu {{ ($ROUTE === 'permissions.create') ? 'side-menu--active' : '' }}">
-                <div class="side-menu__icon">@icon('plus-circle')</div>
-                <div class="side-menu__title">{{ __('in-sidebar.permissions-create') }}</div>
-            </a>
-        </li>
-    </ul>
-</li>
-
 
 @php ($active = str_starts_with($ROUTE, 'server.'))
 

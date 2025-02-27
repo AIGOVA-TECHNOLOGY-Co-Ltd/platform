@@ -4,8 +4,8 @@
 
 <div class="box flex items-center px-20 py-6">
     <div class="nav nav-tabs flex overflow-auto whitespace-nowrap" role="tablist">
-        <a href="{{ route('permissions.edit', ['role_id' => $row->role_id ?? 0]) }}"
-            class="p-4 {{ ($ROUTE === 'permissions.edit') ? 'active' : '' }}" role="tab">
+        <a href="{{ route('user.permissions.edit', ['role_id' => $row->role_id ?? 0]) }}"
+            class="p-4 {{ ($ROUTE === 'user.permissions.edit') ? 'active' : '' }}" role="tab">
             {{ 'Edit Permission ' . $row->role->name ?? 'Permission for Role #' . ($row->role_id ?? 'Unknown') }}
         </a>
     </div>
@@ -43,7 +43,7 @@
             </div>
 
             <!-- Permission edit form -->
-            <form method="POST" action="{{ route('permissions.update', ['role_id' => $row->role_id ?? 0]) }}"
+            <form method="POST" action="{{ route('user.permissions.update', ['role_id' => $row->role_id ?? 0]) }}"
                 class="space-y-8">
                 @csrf
                 @method('PUT')
@@ -70,7 +70,7 @@
                         class="btn btn-primary bg-blue-600 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-700 transition">
                         Submit
                     </button>
-                    <a href="{{ route('permissions.index') }}"
+                    <a href="{{ route('user.permissions.index') }}"
                         class="btn btn-secondary bg-gray-300 text-gray-800 px-3 py-2 rounded-md text-sm hover:bg-gray-400 transition">
                         Cancel
                     </a>
