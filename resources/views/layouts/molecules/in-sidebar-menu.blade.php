@@ -391,6 +391,7 @@
 
         {{--start permissions--}}
         @php ($active = str_starts_with($ROUTE, 'user.permissions.'))
+
         <li>
             <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
                 <div class="side-menu__icon">@icon('shield')</div>
@@ -401,7 +402,7 @@
                 </div>
             </a>
 
-            <ul class="{{ $active ? 'side-menu__sub-open' : '' }}">
+            <ul style="margin-left: 30px;" class="{{ $active ? 'side-menu__sub-open' : '' }}">
                 <li>
                     <a href="{{ route('user.permissions.index') }}"
                         class="side-menu {{ ($ROUTE === 'user.permissions.index') ? 'side-menu--active' : '' }}">
@@ -423,6 +424,9 @@
 
     </ul>
 </li>
+
+
+
 
 @php ($active = str_starts_with($ROUTE, 'server.'))
 
