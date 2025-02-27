@@ -11,6 +11,16 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div class="alert alert-danger p-4 mb-4 rounded-md">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('user.permissions.create') }}">
             @csrf
             <input type="hidden" name="_action" value="create" />

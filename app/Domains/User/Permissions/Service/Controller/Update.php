@@ -5,7 +5,7 @@ namespace App\Domains\User\Permissions\Service\Controller;
 use App\Domains\Enterprise\Model\Enterprise;
 use App\Domains\User\Permissions\Model\Action;
 use App\Domains\User\Permissions\Model\Permission;
-use App\Domains\Role\Model\Role;
+use App\Domains\User\Role\Model\Role;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 

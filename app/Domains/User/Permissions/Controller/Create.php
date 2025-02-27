@@ -3,7 +3,7 @@ namespace App\Domains\User\Permissions\Controller;
 use Illuminate\Http\RedirectResponse;
 use App\Domains\User\Permissions\Model\Permission as Model;
 use App\Domains\User\Permissions\Service\Controller\Create as CreateService;
-
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Response;
 use App\Domains\CoreApp\Controller\ControllerWebAbstract;
 
@@ -28,8 +28,13 @@ class Create extends ControllerWebAbstract
     protected function create(): RedirectResponse
     {
         $service = CreateService::new($this->request, $this->auth);
-        $this->row = $service->create();
-        $this->sessionMessage('success', __('permissions-create.success'));
-        return redirect()->route('user.permissions.index', $this->data());
+        try {
+            $this->row = $service->create();
+            $this->sessionMessage('success', __('permissions-create.success'));
+            return redirect()->route('user.permissions.index', $this->data());
+        } catch (ValidationException $e) {
+            $this->sessionMessage('error', $e->errors()['message'][0] ?? 'An error occurred while creating the permission.');
+            return redirect()->back()->withInput()->withErrors($e->errors());
+        }
     }
 }

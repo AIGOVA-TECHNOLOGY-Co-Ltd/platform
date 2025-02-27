@@ -5,8 +5,8 @@ namespace App\Domains\User\Permissions\Service\Controller;
 use App\Domains\Enterprise\Model\Enterprise;
 use App\Domains\User\Permissions\Model\Action;
 use App\Domains\User\Permissions\Model\Permission;
-use App\Domains\Role\Model\Role;
-
+use App\Domains\User\Role\Model\Role;
+use Illuminate\Validation\ValidationException;
 use App\Domains\User\Permissions\Action\ActionFactory;
 
 class Create
@@ -34,7 +34,11 @@ class Create
             'action_id' => 'required|exists:actions,id',
         ]);
 
-        return $this->factory->create($data);
+        try {
+            return $this->factory->create($data);
+        } catch (ValidationException $e) {
+            throw $e; // Re-throw the exception to be caught by the controller
+        }
     }
 
     public function data(): array
