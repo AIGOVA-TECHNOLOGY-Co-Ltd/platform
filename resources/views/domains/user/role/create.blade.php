@@ -22,7 +22,7 @@
             <label class="form-label">{{ __('role-create.Alias') }}</label>
             <input type="text" name="alias"
                 class="form-control form-control-lg {{ $errors->has('alias') ? 'border-red-500' : '' }}"
-                value="{{ old('alias') }}" readonly> <!-- Thêm readonly nếu muốn tự động tạo -->
+                value="{{ old('alias') }}" readonly>
             @if($errors->has('alias'))
             <div class="text-red-500 mt-1">{{ $errors->first('alias') }}</div>
             @endif
@@ -36,6 +36,22 @@
                 rows="3">{{ old('description') }}</textarea>
             @if($errors->has('description'))
             <div class="text-red-500 mt-1">{{ $errors->first('description') }}</div>
+            @endif
+        </div>
+
+        <!-- Features Selection -->
+        <div class="form-group mb-4">
+            <label class="form-label">{{ __('role-create.Features') }}</label>
+            @foreach ($features as $feature)
+            <div class="flex items-center mb-2">
+                <input type="checkbox" name="feature_ids[]"
+                    value="{{ $feature->id }}"
+                    class="form-check-input">
+                <label class="ml-2">{{ $feature->name }}</label>
+            </div>
+            @endforeach
+            @if($errors->has('feature_ids'))
+            <div class="text-red-500 mt-1">{{ $errors->first('feature_ids') }}</div>
             @endif
         </div>
 

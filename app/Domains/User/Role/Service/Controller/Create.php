@@ -86,7 +86,6 @@ class Create extends CreateMapAbstract
                 ->validate()
                 ->create();
 
-            // Xử lý gắn tính năng (features) cho vai trò
             if ($this->request->has('feature_ids')) {
                 $featureIds = $this->request->get('feature_ids'); // Giả sử feature_ids là mảng ID của các tính năng
                 $role->features()->sync($featureIds); // Sync các tính năng với vai trò
