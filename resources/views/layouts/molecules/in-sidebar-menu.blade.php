@@ -242,8 +242,6 @@
     </ul>
 </li>
 
-@php ($active = str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
-
     {{--end add item Enterprise--}}
     @if ($AUTH->adminMode())
 
@@ -303,7 +301,8 @@
                 </div>
             </a>
 
-            <ul class="{{ request()->routeIs('role.index') || request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
+            <ul
+                class="{{ request()->routeIs('role.index') || request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
                 <!-- Role Index -->
                 <li class="mt-2 pl-4">
                     <a href="{{ route('role.index') }}"
@@ -313,29 +312,44 @@
                     </a>
                 </li>
                 <li class="pl-4">
-                    <a href="{{ route('role.create') }}" class="side-menu {{ ($ROUTE === 'role.create') ? 'side-menu--active' : '' }}">
+                    <a href="{{ route('role.create') }}"
+                        class="side-menu {{ ($ROUTE === 'role.create') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('plus-circle')</div>
                         <div class="side-menu__title">{{ __('in-sidebar.role-create') }}</div>
                     </a>
                 </li>
 
-                <!-- Feature Management -->
-                <li class="mt-2 pl-4">
-                    <a href="javascript:;" class="side-menu {{ request()->routeIs('role.feature.*') ? 'side-menu--active' : '' }}">
+                <!-- Feature Management (Indent + Border để thể hiện thuộc Roles) -->
+                <li class="pl-4">
+                    <a href="javascript:;"
+                        class="side-menu {{ request()->routeIs('role.feature.*') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('settings')</div>
                         <div class="side-menu__title">
-                            {{ __('in-sidebar.role-feature') }}
-                            <div class="side-menu__sub-icon {{ request()->routeIs('role.feature.*') ? 'transform rotate-180' : '' }}">
+                            Features
+                            <div
+                                class="side-menu__sub-icon {{ request()->routeIs('role.feature.*') ? 'transform rotate-180' : '' }}">
                                 @icon('chevron-down')
                             </div>
                         </div>
                     </a>
 
-                    <ul class="{{ request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
-                        <li class="mt-2 pl-4">
-                            <a href="{{ route('role.feature.index') }}" class="side-menu {{ request()->routeIs('role.feature.index') ? 'side-menu--active' : '' }}">
+                    <ul style="margin-left: 30px;"
+                        class="pl-6 {{ request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
+                        <!-- Feature List -->
+                        <li class="mt-2">
+                            <a href="{{ route('role.feature.index') }}"
+                                class="side-menu {{ request()->routeIs('role.feature.index') ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon">@icon('list')</div>
-                                <div class="side-menu__title">{{ __('in-sidebar.role-feature-index') }}</div>
+                                <div class="side-menu__title">List</div>
+                            </a>
+                        </li>
+
+                        <!-- Create Feature -->
+                        <li class="">
+                            <a href="{{ route('role.feature.create') }}"
+                                class="side-menu {{ request()->routeIs('role.feature.create') ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon">@icon('plus-circle')</div>
+                                <div class="side-menu__title">Create</div>
                             </a>
                         </li>
                     </ul>
