@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use App\Domains\User\Role\Model\Role;  // Thêm dòng này
 use App\Domains\Permissions\Model\Action;
 
-class Permission extends Model
+use App\Domains\CoreApp\Model\ModelAbstract;
+
+
+class Permission extends ModelAbstract
 {
     use HasFactory;
 
@@ -16,11 +19,10 @@ class Permission extends Model
     protected $fillable = [
         'role_id',
         'action_id',
-        'enterprise_id',
     ];
-
     protected $casts = [
         'created_at' => 'datetime',
+        'value' => 'integer',
     ];
 
     public function user()

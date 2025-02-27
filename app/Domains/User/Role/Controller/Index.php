@@ -21,7 +21,9 @@ class Index extends ControllerAbstract
 
         $this->meta('title', __('role-index.meta-title'));
 
-        return $this->page('user.role.index', $this->getService()->data());
+        $data = $this->getService()->data();
+        // dd($data); // Kiểm tra dữ liệu nếu cần
+        return $this->page('role.index', $data);
     }
 
     /**

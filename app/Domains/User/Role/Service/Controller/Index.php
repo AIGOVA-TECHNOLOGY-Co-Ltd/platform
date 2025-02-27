@@ -51,7 +51,9 @@ class Index extends IndexMapAbstract
     public function data(): array
     {
         return [
-            'roles' => $this->listPaginated(), // Sử dụng phân trang cho view
+            'roles' => $this->listPaginated()->through(function ($role) {
+                return $this->formatRole($role);
+            }), // Sử dụng through() để định dạng từng item trong paginator
             'search' => $this->request->get('search'),
         ];
     }
@@ -68,16 +70,18 @@ class Index extends IndexMapAbstract
                 'id',
                 'name',
                 'description',
-                'alias', // Bao gồm alias
+                'alias',
                 'created_at',
-            ]);
+            ])
+            ->with('features') // Eager load features
+        ;
 
         if ($this->request->filled('search')) {
             $search = $this->request->get('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
                     ->orWhere('description', 'LIKE', "%{$search}%")
-                    ->orWhere('alias', 'LIKE', "%{$search}%"); // Tìm kiếm theo alias
+                    ->orWhere('alias', 'LIKE', "%{$search}%");
             });
         }
 
@@ -96,9 +100,10 @@ class Index extends IndexMapAbstract
                 'id',
                 'name',
                 'description',
-                'alias', // Bao gồm alias
+                'alias',
                 'created_at',
             ])
+            ->with('features') // Eager load features
             ->enabled();
 
         if ($this->request->filled('search')) {
@@ -106,11 +111,13 @@ class Index extends IndexMapAbstract
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
                     ->orWhere('description', 'LIKE', "%{$search}%")
-                    ->orWhere('alias', 'LIKE', "%{$search}%"); // Tìm kiếm theo alias
+                    ->orWhere('alias', 'LIKE', "%{$search}%");
             });
         }
 
-        return $query->get(); // Trả về Collection thay vì paginate
+        return $query->get()->map(function ($role) {
+            return $this->formatRole($role);
+        });
     }
 
     /**
@@ -120,11 +127,11 @@ class Index extends IndexMapAbstract
      */
     public function responseJsonList(): Collection
     {
-        return $this->list(); // Sử dụng list() để trả về Collection
+        return $this->list();
     }
 
     /**
-     * Format role data.
+     * Format role data, including feature names.
      *
      * @param \App\Domains\User\Role\Model\Role $role
      * @return array
@@ -135,8 +142,9 @@ class Index extends IndexMapAbstract
             'id' => $role->id,
             'name' => $role->name,
             'description' => $role->description,
-            'alias' => $role->alias, // Bao gồm alias
+            'alias' => $role->alias,
             'created_at' => $role->created_at->toDateTimeString(),
+            'feature_names' => $role->features->pluck('name')->all(), // Lấy tất cả name của features
         ];
     }
 }

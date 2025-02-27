@@ -23,8 +23,14 @@ class Feature extends ModelAbstract
      */
     public const TABLE = 'features';
 
-    public function roles(): HasMany
+    /**
+     * Quan hệ: Một Feature thuộc về nhiều Roles thông qua RoleFeatures (nhiều-nhiều).
+     *
+     * @return BelongsToMany
+     */
+    public function roles(): BelongsToMany
     {
-        return $this->hasMany(RoleFeatureModel::class, 'feature_id');
+        return $this->belongsToMany(RoleModel::class, 'role_features', 'feature_id', 'role_id');
+        // Xóa ->withTimestamps()
     }
 }

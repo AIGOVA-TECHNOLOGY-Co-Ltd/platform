@@ -27,7 +27,6 @@ class Index extends ControllerAbstract
     {
         $data = $this->dataCore();
 
-        // Nếu chưa có 'permissions', thêm vào
         if (!array_key_exists('permissions', $data)) {
             $data['permissions'] = $this->list();
         }
@@ -40,10 +39,28 @@ class Index extends ControllerAbstract
      */
     public function list(): Collection
     {
-        return new Collection(
-            Model::query()
-                ->with(['role', 'action']) // Load các quan hệ cần thiết
-                ->get()
-        );
+        $permissions = Model::query()
+            ->with(['role', 'action']) // Load quan hệ Role & Action
+            ->get()
+            ->groupBy('role.name'); // Nhóm theo Role Name
+
+        $formattedPermissions = collect();
+        $index = 1; // Bắt đầu số thứ tự từ 1
+
+        foreach ($permissions as $roleName => $groupedPermissions) {
+            $actions = $groupedPermissions->pluck('action.name')->unique()->implode(', ');
+            $firstPermission = $groupedPermissions->first(); // Lấy bản ghi đầu tiên
+
+            $formattedPermissions->push((object) [
+                'stt' => $index++, // Gán số thứ tự
+                'role_id' => $firstPermission->role_id, // Sử dụng role_id thay vì id
+                'role_name' => $roleName,
+                'actions' => $actions,
+                'created_at' => $firstPermission->created_at, // Lấy created_at đầu tiên
+            ]);
+        }
+
+        return new Collection($formattedPermissions);
     }
+
 }
