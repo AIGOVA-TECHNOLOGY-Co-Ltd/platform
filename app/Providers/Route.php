@@ -64,7 +64,8 @@ class Route extends RouteServiceProvider
         // Tìm tất cả router.php trong Domains/*/Controller/ và Domains/*/*/Controller/
         $files = array_merge(
             glob(app_path('Domains/*/' . $path . '/router.php')),
-            glob(app_path('Domains/*/*/' . $path . '/router.php'))
+            glob(app_path('Domains/*/*/' . $path . '/router.php')),
+            glob(app_path('Domains/*/*/*/' . $path . '/router.php'))
         );
         foreach ($files as $file) {
             require $file;

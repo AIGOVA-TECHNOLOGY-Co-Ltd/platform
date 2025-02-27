@@ -2,12 +2,11 @@
 
 namespace App\Domains\Permissions\Model;
 
-
-
-use App\Domains\Role\Model\Role;  // Thêm dòng này
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Domains\User\Role\Model\Role;  // Thêm dòng này
 use App\Domains\Permissions\Model\Action;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Domains\CoreApp\Model\ModelAbstract;
 
 
