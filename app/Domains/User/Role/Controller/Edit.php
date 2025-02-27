@@ -19,7 +19,7 @@ class Edit extends ControllerAbstract
 
         $this->meta('title', __('role-edit.meta-title'));
 
-        return $this->page('role.edit', $this->data());
+        return $this->page('user.role.edit', $this->data());
     }
 
     /**

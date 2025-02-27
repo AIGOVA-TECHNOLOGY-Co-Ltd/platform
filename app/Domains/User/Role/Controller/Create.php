@@ -72,7 +72,7 @@ class Create extends ControllerAbstract
 
         $this->meta('title', __('role-edit.meta-title'));
 
-        return $this->page('role.edit', array_merge($this->getService()->data(), ['role' => $role]));
+        return $this->page('user.role.edit', array_merge($this->getService()->data(), ['role' => $role]));
     }
 
     /**
