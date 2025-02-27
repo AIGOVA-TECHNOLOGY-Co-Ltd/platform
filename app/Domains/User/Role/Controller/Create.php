@@ -22,7 +22,7 @@ class Create extends ControllerAbstract
 
         $this->meta('title', __('role-create.meta-title'));
 
-        return $this->page('role.create', $this->getService()->data());
+        return $this->page('user.role.create', $this->getService()->data());
     }
 
     /**
