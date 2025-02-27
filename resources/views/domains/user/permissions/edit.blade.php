@@ -57,7 +57,7 @@
                                 <input type="checkbox" name="actions[]" value="{{ $action['id'] }}"
                                     class="form-check-switch" id="action-{{ $action['id'] }}" {{ in_array($action['id'], $selected_actions) ? 'checked' : '' }}>
                                 <label class="form-check-label text-gray-800" for="action-{{ $action['id'] }}">
-                                    {{ $action['name'] }}
+                                    {{ ucfirst($action['name']) }}
                                 </label>
                             </div>
                         @endforeach
@@ -65,13 +65,14 @@
                 </div>
 
                 <!-- Submit and Cancel buttons -->
-                <div class="flex justify-end space-x-2 mt-5">
+                <div class="flex justify-end space-x-6 mt-5">
                     <button type="submit"
                         class="btn btn-primary bg-blue-600 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-700 transition">
                         Submit
                     </button>
+                    <span class="w-2 invisible">.</span> <!-- Tạo khoảng trống -->
                     <a href="{{ route('user.permissions.index') }}"
-                        class="btn btn-secondary bg-gray-300 text-gray-800 px-3 py-2 rounded-md text-sm hover:bg-gray-400 transition">
+                        class="btn btn-secondary bg-gray-300 text-gray-800 px-3 py-2 rounded-md text-sm hover:bg-gray-400 transition ">
                         Cancel
                     </a>
                 </div>

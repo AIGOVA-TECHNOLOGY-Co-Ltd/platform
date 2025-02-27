@@ -54,7 +54,7 @@
                 @endif
                 <td class="w-1"><a href="{{ $link }}">{{ $permission->stt }}</a></td>
                 <td class="w-1"><a href="{{ $link }}">{{ $permission->role_name }}</a></td>
-                <td class="w-1"><a href="{{ $link }}">{{ $permission->actions }}</a></td>
+                <td class="w-1"><a href="{{ $link }}">{{ ucfirst($permission->actions) }}</a></td>
                 <td class="w-1" data-table-sort-value="{{ $permission->created_at }}">
                     <a href="{{ $link }}">@dateWithUserTimezone($permission->created_at)</a>
                 </td>
