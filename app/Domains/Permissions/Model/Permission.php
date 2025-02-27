@@ -4,7 +4,7 @@ namespace App\Domains\Permissions\Model;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Domains\Role\Model\Role;  // Thêm dòng này
+use App\Domains\User\Role\Model\Role;  // Thêm dòng này
 use App\Domains\Permissions\Model\Action;
 
 class Permission extends Model

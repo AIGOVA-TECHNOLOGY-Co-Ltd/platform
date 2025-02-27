@@ -17,7 +17,7 @@ use App\Domains\User\Model\Collection\User as Collection;
 use App\Domains\User\Model\Traits\Preferences as PreferencesTrait;
 use App\Domains\User\Test\Factory\User as TestFactory;
 use App\Domains\UserSession\Model\UserSession as UserSessionModel;
-use App\Domains\Role\Model\Role as RoleModel;
+use App\Domains\User\Role\Model\Role as RoleModel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Domains\Enterprise\Model\Enterprise as EnterpriseModel;
 

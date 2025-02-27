@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\User\Model;
 
-use App\Domains\Role\Model\Role as RoleModel;
+use App\Domains\User\Role\Model\Role as RoleModel;
 use App\Domains\Permissions\Model\Permission as PermissionModel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 

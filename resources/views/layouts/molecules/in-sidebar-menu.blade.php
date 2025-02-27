@@ -242,10 +242,10 @@
     </ul>
 </li>
 
-    {{--end add item Enterprise--}}
-    @if ($AUTH->adminMode())
+{{--end add item Enterprise--}}
+@if ($AUTH->adminMode())
 
-    @php ($active = str_starts_with($ROUTE, 'user') || str_starts_with($ROUTE, 'ip-lock.') || str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
+@php ($active = str_starts_with($ROUTE, 'user') || str_starts_with($ROUTE, 'ip-lock.') || str_starts_with($ROUTE, 'role') || str_starts_with($ROUTE, 'feature'))
 
 <li>
     <a href="javascript:;" class="side-menu {{ $active ? 'side-menu--active' : '' }}">
@@ -291,29 +291,30 @@
 
         <!-- Thêm Role Dropdown dưới Blocked IPs -->
         <li class="mt-2">
-            <a href="javascript:;" class="side-menu {{ request()->routeIs('role.*') ? 'side-menu--active' : '' }}">
+            <a href="javascript:;" class="side-menu {{ request()->routeIs('user.role.*') ? 'side-menu--active' : '' }}">
                 <div class="side-menu__icon">@icon('user')</div>
                 <div class="side-menu__title">
                     {{ __('in-sidebar.role') }}
-                    <div class="side-menu__sub-icon {{ request()->routeIs('role.*') ? 'transform rotate-180' : '' }}">
+                    <div
+                        class="side-menu__sub-icon {{ request()->routeIs('user.role.*') ? 'transform rotate-180' : '' }}">
                         @icon('chevron-down')
                     </div>
                 </div>
             </a>
 
             <ul
-                class="{{ request()->routeIs('role.index') || request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
+                class="{{ request()->routeIs('user.role.index') || request()->routeIs('user.role.feature.*') ? 'side-menu__sub-open' : '' }}">
                 <!-- Role Index -->
                 <li class="mt-2 pl-4">
-                    <a href="{{ route('role.index') }}"
-                        class="side-menu {{ request()->routeIs('role.index') ? 'side-menu--active' : '' }}">
+                    <a href="{{ route('user.role.index') }}"
+                        class="side-menu {{ request()->routeIs('user.role.index') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('users')</div>
                         <div class="side-menu__title">{{ __('in-sidebar.role-index') }}</div>
                     </a>
                 </li>
                 <li class="pl-4">
-                    <a href="{{ route('role.create') }}"
-                        class="side-menu {{ ($ROUTE === 'role.create') ? 'side-menu--active' : '' }}">
+                    <a href="{{ route('user.role.create') }}"
+                        class="side-menu {{ ($ROUTE === 'user.role.create') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('plus-circle')</div>
                         <div class="side-menu__title">{{ __('in-sidebar.role-create') }}</div>
                     </a>
@@ -322,23 +323,23 @@
                 <!-- Feature Management (Indent + Border để thể hiện thuộc Roles) -->
                 <li class="pl-4">
                     <a href="javascript:;"
-                        class="side-menu {{ request()->routeIs('role.feature.*') ? 'side-menu--active' : '' }}">
+                        class="side-menu {{ request()->routeIs('user.role.feature.*') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('settings')</div>
                         <div class="side-menu__title">
                             Features
                             <div
-                                class="side-menu__sub-icon {{ request()->routeIs('role.feature.*') ? 'transform rotate-180' : '' }}">
+                                class="side-menu__sub-icon {{ request()->routeIs('user.role.feature.*') ? 'transform rotate-180' : '' }}">
                                 @icon('chevron-down')
                             </div>
                         </div>
                     </a>
 
                     <ul style="margin-left: 30px;"
-                        class="pl-6 {{ request()->routeIs('role.feature.*') ? 'side-menu__sub-open' : '' }}">
+                        class="pl-6 {{ request()->routeIs('user.role.feature.*') ? 'side-menu__sub-open' : '' }}">
                         <!-- Feature List -->
                         <li class="mt-2">
-                            <a href="{{ route('role.feature.index') }}"
-                                class="side-menu {{ request()->routeIs('role.feature.index') ? 'side-menu--active' : '' }}">
+                            <a href="{{ route('user.role.feature.index') }}"
+                                class="side-menu {{ request()->routeIs('user.role.feature.index') ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon">@icon('list')</div>
                                 <div class="side-menu__title">List</div>
                             </a>
@@ -346,8 +347,8 @@
 
                         <!-- Create Feature -->
                         <li class="">
-                            <a href="{{ route('role.feature.create') }}"
-                                class="side-menu {{ request()->routeIs('role.feature.create') ? 'side-menu--active' : '' }}">
+                            <a href="{{ route('user.role.feature.create') }}"
+                                class="side-menu {{ request()->routeIs('user.role.feature.create') ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon">@icon('plus-circle')</div>
                                 <div class="side-menu__title">Create</div>
                             </a>
@@ -364,19 +365,22 @@
                 <div class="side-menu__icon">@icon('briefcase')</div>
                 <div class="side-menu__title">
                     {{ __('in-sidebar.enterprise') }}
-                    <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')</div>
+                    <div class="side-menu__sub-icon {{ $active ? 'transform rotate-180' : '' }}">@icon('chevron-down')
+                    </div>
                 </div>
             </a>
 
             <ul class="{{ $active ? 'side-menu__sub-open' : '' }}">
                 <li>
-                    <a href="{{route('enterprise.index')}}" class="side-menu {{ ($ROUTE === 'enterprise.index') ? 'side-menu--active' : '' }}">
+                    <a href="{{route('enterprise.index')}}"
+                        class="side-menu {{ ($ROUTE === 'enterprise.index') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('list')</div>
                         <div class="side-menu__title">{{ __('in-sidebar.enterprise-index') }}</div>
                     </a>
                 </li>
                 <li>
-                    <a href="{{route('enterprise.create')}}" class="side-menu {{ ($ROUTE === 'enterprise.create') ? 'side-menu--active' : '' }}">
+                    <a href="{{route('enterprise.create')}}"
+                        class="side-menu {{ ($ROUTE === 'enterprise.create') ? 'side-menu--active' : '' }}">
                         <div class="side-menu__icon">@icon('plus-circle')</div>
                         <div class="side-menu__title">{{__('in-sidebar.enterprise-create')}}</div>
                     </a>
