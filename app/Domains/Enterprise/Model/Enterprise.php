@@ -4,11 +4,15 @@ namespace App\Domains\Enterprise\Model;
 
 use App\Domains\User\Role\Model\Role;
 use App\Domains\Core\Model\ModelAbstract;
+use App\Domains\User\Model\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property mixed $owner
+ */
 class Enterprise extends ModelAbstract
 {
     use HasFactory;
