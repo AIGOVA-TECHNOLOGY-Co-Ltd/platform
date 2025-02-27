@@ -2,7 +2,7 @@
 
 @section('body')
 <!-- Search Form -->
-<form method="GET" action="{{ route('role.index') }}" class="sm:flex sm:space-x-4">
+<form method="GET" action="{{ route('user.role.index') }}" class="sm:flex sm:space-x-4">
     <div class="flex-grow mt-2 sm:mt-0">
         <input type="search"
             name="search"
@@ -44,10 +44,10 @@
                     {{ \Carbon\Carbon::parse($role['created_at'])->format('d/m/Y H:i') }}
                 </td>
                 <td>
-                    <a href="{{ route('role.edit', $role['id']) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('user.role.edit', $role['id']) }}" class="btn btn-primary btn-sm">
                         {{ __('role-index.Edit') }}
                     </a>
-                    <form action="{{ route('role.destroy', $role['id']) }}" method="POST" style="display:inline;" onsubmit="return confirm('{{ __('role-delete.confirm') }}');">
+                    <form action="{{ route('user.role.destroy', $role['id']) }}" method="POST" style="display:inline;" onsubmit="return confirm('{{ __('role-delete.confirm') }}');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm">

@@ -11,7 +11,7 @@ use App\Domains\User\Model\User as UserModel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Domains\User\Role\RoleFeature\Model\RoleFeature as RoleFeatureModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Domains\Role\Feature\Model\Feature as FeatureModel; // Sử dụng namespace từ file của bạn
+use App\Domains\User\Role\Feature\Model\Feature as FeatureModel; // Sử dụng namespace từ file của bạn
 
 class Role extends ModelAbstract
 {
