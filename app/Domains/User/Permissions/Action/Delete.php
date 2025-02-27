@@ -15,6 +15,10 @@ class Delete
     {
         // Xóa tất cả permissions liên quan đến role_id
         PermissionModel::where('role_id', $role_id)->delete();
+        // // Soft delete
+        // PermissionModel::where('role_id', $role_id)->delete();
+        // // or
+        // PermissionModel::where('role_id', $role_id)->update(['deleted_at' => now()]);
 
         // Trả về redirect response
         return redirect()->route('user.permissions.index')->with('success', __('permissions-delete.success'));

@@ -6,14 +6,15 @@ use App\Domains\User\Role\Model\Role;  // Thêm dòng này
 use App\Domains\User\Permissions\Model\Action;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Domains\CoreApp\Model\ModelAbstract;
-
+// use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Permission extends ModelAbstract
 {
     use HasFactory;
-
+    // use SoftDeletes;
     protected $table = 'permissions';
 
+    // protected $dates = ['deleted_at'];
     protected $fillable = [
         'role_id',
         'action_id',
