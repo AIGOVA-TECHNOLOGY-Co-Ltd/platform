@@ -56,6 +56,7 @@ class Create extends CreateMapAbstract
     {
         return [
             'errors' => session('errors') ?? new MessageBag(),
+            'features' => \App\Domains\User\Role\Feature\Model\Feature::all(),
         ];
     }
 
@@ -70,22 +71,26 @@ class Create extends CreateMapAbstract
             DB::beginTransaction();
 
             $data = $this->request->all();
-            // Tạo alias từ name, chuyển thành slug và đảm bảo duy nhất
             $alias = Str::slug($data['name']);
             $originalAlias = $alias;
             $counter = 1;
 
-            // Kiểm tra tính duy nhất của alias
             while (Model::where('alias', $alias)->exists()) {
                 $alias = $originalAlias . '-' . $counter;
                 $counter++;
             }
 
-            $data['alias'] = $alias; // Thêm alias vào dữ liệu
+            $data['alias'] = $alias;
 
             $role = CreateService::make($data)
                 ->validate()
                 ->create();
+
+            // Xử lý gắn tính năng (features) cho vai trò
+            if ($this->request->has('feature_ids')) {
+                $featureIds = $this->request->get('feature_ids'); // Giả sử feature_ids là mảng ID của các tính năng
+                $role->features()->sync($featureIds); // Sync các tính năng với vai trò
+            }
 
             DB::commit();
 
@@ -128,14 +133,13 @@ class Create extends CreateMapAbstract
             $validator = Validator::make($this->request->all(), [
                 'name' => 'required|string|max:100|unique:roles,name,' . $role->id,
                 'description' => 'nullable|string|max:255',
-                'alias' => 'nullable|string|max:100|unique:roles,alias,' . $role->id, // Validation cho alias
+                'alias' => 'nullable|string|max:100|unique:roles,alias,' . $role->id,
             ]);
 
             if ($validator->fails()) {
                 throw new \Illuminate\Validation\ValidationException($validator);
             }
 
-            // Tạo alias mới từ name nếu name thay đổi
             $newAlias = Str::slug($this->request->get('name'));
             if ($role->name !== $this->request->get('name')) {
                 $originalAlias = $newAlias;
@@ -146,14 +150,20 @@ class Create extends CreateMapAbstract
                     $counter++;
                 }
             } else {
-                $newAlias = $role->alias; // Giữ nguyên alias nếu name không thay đổi
+                $newAlias = $role->alias;
             }
 
             $role->update([
                 'name' => $this->request->get('name'),
                 'description' => $this->request->get('description'),
-                'alias' => $newAlias, // Cập nhật alias
+                'alias' => $newAlias,
             ]);
+
+            // Xử lý cập nhật tính năng (features) cho vai trò
+            if ($this->request->has('feature_ids')) {
+                $featureIds = $this->request->get('feature_ids'); // Mảng ID của các tính năng
+                $role->features()->sync($featureIds); // Sync các tính năng với vai trò
+            }
 
             DB::commit();
 
@@ -168,7 +178,6 @@ class Create extends CreateMapAbstract
             throw $e;
         }
     }
-
     /**
      * Remove the specified role.
      *
