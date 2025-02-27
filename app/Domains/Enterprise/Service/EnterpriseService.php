@@ -22,6 +22,7 @@ class EnterpriseService
             ->map(function ($enterprise) {
                 return [
                     'id' => $enterprise->id,
+                    'user_name' => $enterprise->owner->name,
                     'name' => $enterprise->name,
                     'email' => $enterprise->email,
                     'roleName' => $enterprise->ownerRole->name ?? null,
@@ -48,7 +49,9 @@ class EnterpriseService
 
     /**
      * Store new Enterprise
+     *
      * @param $validated
+     *
      * @return Enterprise
      */
     public function store($validated)
@@ -61,5 +64,37 @@ class EnterpriseService
             'email' => $validated['email'],
             'owner_id' => $validated['owner_id'],
         ]);
+    }
+
+    public function update($validated, $id)
+    {
+        // Tìm enterprise theo ID
+        $enterprise = Enterprise::find($id);
+
+        // Nếu không tìm thấy, báo lỗi
+        if (!$enterprise) {
+            throw new \Exception('Enterprise not found');
+        }
+
+        // Cập nhật enterprise
+        $enterprise->update($validated);
+
+        return $enterprise;
+    }
+
+    public function getEnterpriseById($id): ?Enterprise
+    {
+        $enterprise = Enterprise::find($id);
+
+        return $enterprise;
+    }
+
+    public function delete($id): void
+    {
+        // Tìm enterprise theo ID
+        $enterprise = Enterprise::find($id);
+
+        // Xóa enterprise nếu tồn tại
+        $enterprise?->delete();
     }
 }
