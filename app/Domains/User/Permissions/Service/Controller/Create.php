@@ -48,7 +48,7 @@ class Create
 
     protected function getRoles(): array
     {
-        return \App\Domains\Role\Model\Role::all(['id', 'name'])->toArray();
+        return \App\Domains\User\Role\Model\Role::all(['id', 'name'])->toArray();
     }
 
     /**

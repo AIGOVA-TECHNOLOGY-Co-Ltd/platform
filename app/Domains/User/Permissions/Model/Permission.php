@@ -5,7 +5,6 @@ namespace App\Domains\User\Permissions\Model;
 use App\Domains\Role\Model\Role;  // Thêm dòng này
 use App\Domains\User\Permissions\Model\Action;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Domains\CoreApp\Model\ModelAbstract;
 
 
