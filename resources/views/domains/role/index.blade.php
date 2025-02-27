@@ -2,16 +2,15 @@
 
 @section('body')
 <!-- Search Form -->
-<form method="GET" action="{{ route('user.role.index') }}" class="sm:flex sm:space-x-4">
+<form method="GET" class="sm:flex sm:space-x-4">
     <div class="flex-grow mt-2 sm:mt-0">
         <input type="search"
             name="search"
             class="form-control form-control-lg"
             placeholder="{{ __('role-index.Search...') }}"
-            value="{{ $search }}"
+            value="{{ old('search', $search) }}"
             data-table-search="#role-list-table">
     </div>
-
     <div class="sm:ml-4 mt-2 sm:mt-0">
         <button type="submit" class="btn form-control-lg bg-white">
             {{ __('role-index.Search') }}
@@ -37,7 +36,7 @@
             @forelse($roles as $role)
             <tr>
                 <td>{{ $role['id'] }}</td>
-                <td class="text-left">{{ $role['name'] }}</td> >
+                <td class="text-left">{{ $role['name'] }}</td>
                 <td class="text-left">{{ $role['description'] }}</td>
                 <td class="text-left">{{ implode(', ', $role['feature_names'] ?? []) }}</td>
                 <td data-table-sort-value="{{ $role['created_at'] }}">
