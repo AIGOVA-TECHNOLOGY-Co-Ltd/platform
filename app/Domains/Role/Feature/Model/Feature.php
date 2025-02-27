@@ -6,8 +6,9 @@ namespace App\Domains\Role\Feature\Model;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Domains\CoreApp\Model\ModelAbstract;
+use App\Domains\Role\Model\Role as RoleModel;
 use App\Domains\Role\RoleFeature\Model\RoleFeature as RoleFeatureModel;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Feature extends ModelAbstract
 {
@@ -23,8 +24,14 @@ class Feature extends ModelAbstract
      */
     public const TABLE = 'features';
 
-    public function roles(): HasMany
+    /**
+     * Quan hệ: Một Feature thuộc về nhiều Roles thông qua RoleFeatures (nhiều-nhiều).
+     *
+     * @return BelongsToMany
+     */
+    public function roles(): BelongsToMany
     {
-        return $this->hasMany(RoleFeatureModel::class, 'feature_id');
+        return $this->belongsToMany(RoleModel::class, 'role_features', 'feature_id', 'role_id');
+        // Xóa ->withTimestamps()
     }
 }

@@ -4,48 +4,25 @@ namespace App\Domains\Permissions\Controller;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use App\Domains\Permissions\Model\Permission as Model;
-use App\Domains\Permissions\Model\Collection\Permission as Collection;
-use App\Domains\Permissions\Feature\Service\Controller\Index as ControllerService;
+use App\Domains\Permissions\Service\Controller\Index as ControllerService;
 
 class Index extends ControllerAbstract
 {
     public function __invoke(): Response|JsonResponse
     {
+        $service = new ControllerService($this->request, $this->auth);
+
         if ($this->request->wantsJson()) {
-            return $this->responseJson();
+            return $this->responseJson($service);
         }
 
         $this->meta('title', __('permissions-index.meta-title'));
 
-        return $this->page('permissions.index', $this->data());
+        return $this->page('permissions.index', $service->data());
     }
 
-    protected function data(): array
+    protected function responseJson(ControllerService $service): JsonResponse
     {
-        $data = ControllerService::new($this->request, $this->auth)->data();
-
-        // Nếu chưa có 'permissions', thêm vào
-        if (!array_key_exists('permissions', $data)) {
-            $data['permissions'] = Model::query()
-                ->with(['role', 'action', 'entity', 'scope']) // Load quan hệ nếu cần
-                ->get();
-        }
-
-        return $data;
+        return $this->json($this->factory()->fractal('simple', $service->list()));
     }
-
-    protected function responseJson(): JsonResponse
-    {
-        return $this->json($this->factory()->fractal('simple', $this->responseJsonList()));
-    }
-    protected function responseJsonList(): Collection
-    {
-        return new Collection(
-            Model::query()
-                ->with(['role', 'action', 'entity', 'scope'])
-                ->get()
-        );
-    }
-
 }

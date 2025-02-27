@@ -51,7 +51,7 @@ class Route extends RouteServiceProvider
         Route::middleware('user-auth-api')
             ->name('api.')
             ->prefix('api')
-            ->group(fn () => $this->mapLoadRouter('ControllerApi'));
+            ->group(fn() => $this->mapLoadRouter('ControllerApi'));
     }
 
     /**
@@ -61,7 +61,12 @@ class Route extends RouteServiceProvider
      */
     protected function mapLoadRouter(string $path): void
     {
-        foreach (glob(app_path('Domains/*/'.$path.'/router.php')) as $file) {
+        // Tìm tất cả router.php trong Domains/*/Controller/ và Domains/*/*/Controller/
+        $files = array_merge(
+            glob(app_path('Domains/*/' . $path . '/router.php')),
+            glob(app_path('Domains/*/*/' . $path . '/router.php'))
+        );
+        foreach ($files as $file) {
             require $file;
         }
     }

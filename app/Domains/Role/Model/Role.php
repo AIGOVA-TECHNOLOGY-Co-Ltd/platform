@@ -11,8 +11,7 @@ use App\Domains\User\Model\User as UserModel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Domains\Role\RoleFeature\Model\RoleFeature as RoleFeatureModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Domains\Enterprise\Model\Enterprise as EnterpriseModel;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Domains\Role\Feature\Model\Feature as FeatureModel; // Sử dụng namespace từ file của bạn
 
 class Role extends ModelAbstract
 {
@@ -25,6 +24,17 @@ class Role extends ModelAbstract
     protected $table = 'roles';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+        'description',
+        'alias', // Bao gồm alias
+    ];
+
+    /**
      * The attributes that should be cast.
      *
      * @var array
@@ -35,31 +45,24 @@ class Role extends ModelAbstract
     ];
 
     /**
-     * Quan hệ: Mỗi Role liên kết với Enterprise thông qua User và UserRoles
-     * Giả sử Role -> UserRoles -> Users -> Enterprises
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function enterprise(): BelongsTo
-    {
-        return $this->hasOneThrough(
-            EnterpriseModel::class,
-            UserModel::class,
-            'id', // Foreign key trên users
-            'id', // Foreign key trên enterprises
-            'user_id', // Local key trên user_roles (kết nối với users)
-            'enterprise_id' // Local key trên users (kết nối với enterprises)
-        )->via('users'); // Sử dụng mối quan hệ users để kết nối
-    }
-
-    /**
-     * Get the role features for the role.
+     * Quan hệ: Một Role có nhiều Role Features.
      *
      * @return HasMany
      */
-    public function roleFeature(): HasMany
+    public function roleFeatures(): HasMany
     {
         return $this->hasMany(RoleFeatureModel::class, 'role_id');
+    }
+
+    /**
+     * Quan hệ: Một Role có nhiều Features thông qua RoleFeatures (nhiều-nhiều).
+     *
+     * @return BelongsToMany
+     */
+    public function features(): BelongsToMany
+    {
+        return $this->belongsToMany(FeatureModel::class, 'role_features', 'role_id', 'feature_id');
+        // Xóa ->withTimestamps()
     }
 
     /**
@@ -74,18 +77,20 @@ class Role extends ModelAbstract
     }
 
     /**
-     * Kiểm tra nếu Role thuộc về một Enterprise cụ thể
-     * Giả sử kiểm tra qua mối quan hệ với Enterprise thông qua Users
+     * Get the role features for the role.
      *
-     * @param int $enterpriseId
-     * @return bool
+     * @return HasMany
      */
-    public function belongsToEnterprise(int $enterpriseId): bool
+    public function roleFeature(): HasMany
     {
-        // Kiểm tra qua mối quan hệ với Enterprise
-        return $this->enterprise && $this->enterprise->id === $enterpriseId;
+        return $this->hasMany(RoleFeatureModel::class, 'role_id');
     }
 
+    /**
+     * Get the permissions for the role.
+     *
+     * @return HasMany
+     */
     public function permissions(): HasMany
     {
         return $this->hasMany(\App\Domains\Permissions\Model\Permission::class, 'role_id');

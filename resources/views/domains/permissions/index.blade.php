@@ -17,23 +17,6 @@
                 data-table-search="#permissions-list-table" />
         </div>
 
-        <!-- Chọn user -->
-        @if ($users_multiple)
-            <div class="flex-grow mt-2 lg:mt-0">
-                <x-select name="user_id" :options="$users" value="id" text="name"
-                    placeholder="{{ __('permissions-index.user') }}" data-change-submit>
-                </x-select>
-            </div>
-        @endif
-
-
-        <!-- Bật thông báo -->
-        <button type="button" class="sm:ml-4 mt-2 sm:mt-0 bg-white btn form-control-lg" data-notification-request
-            data-notification-request-granted="{{ __('permissions-index.notifications-granted') }}"
-            data-notification-request-denied="{{ __('permissions-index.notifications-denied') }}">
-            {{ __('permissions-index.notifications-enable') }}
-        </button>
-
         <!-- Nút tạo mới permission -->
         <div class="sm:ml-4 mt-2 sm:mt-0 bg-white">
             <a href="{{ route('permissions.create') }}" class="btn form-control-lg whitespace-nowrap">
@@ -57,31 +40,42 @@
                 <th class="w-1">{{ __(key: 'ID') }}</th>
                 <th class="w-1">{{ __('Role Name') }}</th>
                 <th class="w-1">{{ __('Action') }}</th>
-                <th class="w-1">{{ __('Entity') }}</th>
-                <th class="w-1">{{ __('Scope') }}</th>
                 <th class="w-1">{{ __('Created At') }}</th>
-
+                <th class="w-1">{{ __('Actions') }}</th>
             </tr>
         </thead>
 
         <tbody>
             @foreach ($permissions as $permission)
-                <tr>
-                    @if ($user_empty)
-                        <td><a href="{{ route('permissions.edit', $permission->id) }}"
-                                class="block">{{ $permission->user->name ?? '-' }}</a></td>
-                    @endif
-
-                    <td class="w-1">{{ $permission->id }}</td>
-                    <td class="w-1">{{ $permission->role->name ?? '-' }}</td>
-                    <td class="w-1">{{ $permission->action->name ?? '-' }}</td>
-                    <td class="w-1">{{ $permission->entity->name ?? '-' }}</td>
-                    <td class="w-1">{{ $permission->scope->name ?? '-' }}</td>
-                    <td class="w-1" data-table-sort-value="{{ $permission->created_at }}">
-                        @dateWithUserTimezone($permission->created_at)
-                    </td>
-
-                </tr>
+            @php ($link = route('permissions.edit', ['role_id' => $permission->role_id]))            <!-- Sử dụng role_id thay vì id -->
+            <tr>
+                @if ($user_empty)
+                    <td><a href="{{ $link }}" class="block">{{ $permission->user->name ?? '-' }}</a></td>
+                @endif
+                <td class="w-1"><a href="{{ $link }}">{{ $permission->stt }}</a></td>
+                <td class="w-1"><a href="{{ $link }}">{{ $permission->role_name }}</a></td>
+                <td class="w-1"><a href="{{ $link }}">{{ $permission->actions }}</a></td>
+                <td class="w-1" data-table-sort-value="{{ $permission->created_at }}">
+                    <a href="{{ $link }}">@dateWithUserTimezone($permission->created_at)</a>
+                </td>
+                <td class="w-1">
+                    <!-- Edit permission -->
+                    <a href="{{ route('permissions.edit', ['role_id' => $permission->role_id]) }}"
+                        class="btn btn-primary btn-sm">
+                        {{ __('Edit') }}
+                    </a>
+                    <!-- Form xóa permission -->
+                    <form action="{{ route('permissions.delete', ['role_id' => $permission->role_id]) }}" method="POST"
+                        style="display:inline;"
+                        onsubmit="return confirm('Are you sure you want to delete this permission?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            {{ __('Delete') }}
+                        </button>
+                    </form>
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>

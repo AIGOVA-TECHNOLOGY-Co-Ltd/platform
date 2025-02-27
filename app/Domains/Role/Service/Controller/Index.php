@@ -4,61 +4,147 @@ declare(strict_types=1);
 
 namespace App\Domains\Role\Service\Controller;
 
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
-use App\Domains\Role\Model\Collection\Role as Collection;
 use App\Domains\Role\Model\Role as Model;
+use Illuminate\Support\Collection;
 
-class Index extends ControllerAbstract
+class Index extends IndexMapAbstract
 {
     /**
-     * @var bool
+     * @var \Illuminate\Http\Request
      */
-    protected bool $userEmpty = true;
+    protected $request;
 
     /**
-     * @var bool
+     * @var mixed
      */
-    protected bool $vehicleEmpty = true;
+    protected $auth;
 
     /**
      * @param \Illuminate\Http\Request $request
-     * @param \Illuminate\Contracts\Auth\Authenticatable $auth
-     *
-     * @return self
+     * @param mixed $auth
+     * @return void
      */
-    public function __construct(protected Request $request, protected Authenticatable $auth)
+    public function __construct(Request $request, $auth)
     {
-        $this->data();
+        $this->request = $request;
+        $this->auth = $auth;
     }
 
     /**
+     * Create a new instance.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $auth
+     * @return static
+     */
+    public static function new(Request $request, $auth)
+    {
+        return new static($request, $auth);
+    }
+
+    /**
+     * Get data for the index page.
+     *
      * @return array
      */
     public function data(): array
     {
-        return $this->dataCore() + [
-            'lists' => $this->list(),
+        return [
+            'roles' => $this->listPaginated()->through(function ($role) {
+                return $this->formatRole($role);
+            }), // Sử dụng through() để định dạng từng item trong paginator
+            'search' => $this->request->get('search'),
         ];
     }
 
     /**
-     * @return \App\Domains\Role\Model\Collection\Role
+     * Get the paginated list of roles for the view.
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function list(): Collection
+    protected function listPaginated()
     {
-        $user = auth()->user();
+        $query = Model::query()
+            ->select([
+                'id',
+                'name',
+                'description',
+                'alias',
+                'created_at',
+            ])
+            ->with('features') // Eager load features
+        ;
 
-        // Nếu không có User hoặc User không có `enterprise_id`, trả về tập rỗng
-        if (!$user || !isset($user->enterprise_id)) {
-            return new Collection([]);
+        if ($this->request->filled('search')) {
+            $search = $this->request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%")
+                    ->orWhere('alias', 'LIKE', "%{$search}%");
+            });
         }
 
-        return new Collection(
-            Model::query()
-                ->where('enterprise_id', 6) // Lọc theo enterprise_id của User
-                ->get()
-                ->all()
-        );
+        return $query->paginate($this->request->get('per_page', 10));
+    }
+
+    /**
+     * Get the list of roles as a Collection (for JSON or other uses).
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    protected function list(): Collection
+    {
+        $query = Model::query()
+            ->select([
+                'id',
+                'name',
+                'description',
+                'alias',
+                'created_at',
+            ])
+            ->with('features') // Eager load features
+            ->enabled();
+
+        if ($this->request->filled('search')) {
+            $search = $this->request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%")
+                    ->orWhere('alias', 'LIKE', "%{$search}%");
+            });
+        }
+
+        return $query->get()->map(function ($role) {
+            return $this->formatRole($role);
+        });
+    }
+
+    /**
+     * Get the list of roles for JSON response.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function responseJsonList(): Collection
+    {
+        return $this->list();
+    }
+
+    /**
+     * Format role data, including feature names.
+     *
+     * @param \App\Domains\Role\Model\Role $role
+     * @return array
+     */
+    public function formatRole(Model $role): array
+    {
+        return [
+            'id' => $role->id,
+            'name' => $role->name,
+            'description' => $role->description,
+            'alias' => $role->alias,
+            'created_at' => $role->created_at->toDateTimeString(),
+            'feature_names' => $role->features->pluck('name')->all(), // Lấy tất cả name của features
+        ];
     }
 }
