@@ -23,7 +23,7 @@ class Index extends ControllerAbstract
 
         $data = $this->getService()->data();
         // dd($data); // Kiểm tra dữ liệu nếu cần
-        return $this->page('role.index', $data);
+        return $this->page('user.role.index', $data);
     }
 
     /**

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Domains\User\Role\Model\Role as Model;
 use App\Domains\User\Role\Service\Create as CreateService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\MessageBag;
@@ -56,6 +57,7 @@ class Create extends CreateMapAbstract
     {
         return [
             'errors' => session('errors') ?? new MessageBag(),
+            'features' => \App\Domains\User\Role\Feature\Model\Feature::all(),
         ];
     }
 
@@ -67,25 +69,32 @@ class Create extends CreateMapAbstract
     public function store(): array
     {
         try {
+            Log::info('Starting store method');
+
             DB::beginTransaction();
 
             $data = $this->request->all();
-            // Tạo alias từ name, chuyển thành slug và đảm bảo duy nhất
+
             $alias = Str::slug($data['name']);
             $originalAlias = $alias;
             $counter = 1;
 
-            // Kiểm tra tính duy nhất của alias
             while (Model::where('alias', $alias)->exists()) {
                 $alias = $originalAlias . '-' . $counter;
                 $counter++;
             }
 
-            $data['alias'] = $alias; // Thêm alias vào dữ liệu
+            $data['alias'] = $alias;
 
             $role = CreateService::make($data)
                 ->validate()
                 ->create();
+
+            if ($this->request->has('feature_ids')) {
+                $featureIds = array_map('intval', $this->request->get('feature_ids'));
+                $result = $role->features()->sync($featureIds);
+                Log::info('Sync result: ', (array) $result);
+            }
 
             DB::commit();
 
@@ -95,8 +104,8 @@ class Create extends CreateMapAbstract
                 'role' => $this->formatRole($role)
             ];
         } catch (\Exception $e) {
+            Log::error('Error in store: ' . $e->getMessage(), $e->getTrace());
             DB::rollBack();
-
             throw $e;
         }
     }
@@ -121,41 +130,60 @@ class Create extends CreateMapAbstract
     public function update($id): array
     {
         try {
+            Log::info('Starting update method');
+
             DB::beginTransaction();
 
             $role = Model::findOrFail($id);
+            Log::info('Role found: ', $role->toArray());
 
             $validator = Validator::make($this->request->all(), [
                 'name' => 'required|string|max:100|unique:roles,name,' . $role->id,
                 'description' => 'nullable|string|max:255',
-                'alias' => 'nullable|string|max:100|unique:roles,alias,' . $role->id, // Validation cho alias
+                'alias' => 'nullable|string|max:100|unique:roles,alias,' . $role->id,
             ]);
 
+            Log::info('Validator data: ', $this->request->all());
             if ($validator->fails()) {
+                Log::error('Validation failed: ', $validator->errors()->toArray());
                 throw new \Illuminate\Validation\ValidationException($validator);
             }
 
-            // Tạo alias mới từ name nếu name thay đổi
-            $newAlias = Str::slug($this->request->get('name'));
+            $newAlias = $role->alias; // Giữ alias cũ làm mặc định
+
+            // Chỉ tạo alias mới nếu tên thay đổi
             if ($role->name !== $this->request->get('name')) {
+                $newAlias = Str::slug($this->request->get('name'));
                 $originalAlias = $newAlias;
                 $counter = 1;
 
                 while (Model::where('alias', $newAlias)->where('id', '!=', $role->id)->exists()) {
                     $newAlias = $originalAlias . '-' . $counter;
                     $counter++;
+                    Log::info('Checking alias conflict, new alias: ' . $newAlias);
                 }
-            } else {
-                $newAlias = $role->alias; // Giữ nguyên alias nếu name không thay đổi
             }
 
             $role->update([
                 'name' => $this->request->get('name'),
                 'description' => $this->request->get('description'),
-                'alias' => $newAlias, // Cập nhật alias
+                'alias' => $newAlias,
             ]);
 
+            Log::info('Role updated: ', $role->toArray());
+
+            if ($this->request->has('feature_ids')) {
+                $featureIds = !empty($this->request->get('feature_ids'))
+                    ? array_map('intval', $this->request->get('feature_ids'))
+                    : [];
+
+                Log::info('Feature IDs before sync: ', $featureIds);
+                $result = $role->features()->sync($featureIds);
+                Log::info('Sync result: ', (array) $result);
+            }
+
             DB::commit();
+            Log::info('Transaction committed');
 
             return [
                 'status' => true,
@@ -163,8 +191,8 @@ class Create extends CreateMapAbstract
                 'role' => $this->formatRole($role)
             ];
         } catch (\Exception $e) {
+            Log::error('Error in update: ' . $e->getMessage(), $e->getTrace());
             DB::rollBack();
-
             throw $e;
         }
     }
@@ -181,6 +209,10 @@ class Create extends CreateMapAbstract
             DB::beginTransaction();
 
             $role = Model::findOrFail($id);
+
+            // Xóa các quan hệ trước nếu cần
+            $role->features()->detach();
+
             $role->delete();
 
             DB::commit();
@@ -191,7 +223,7 @@ class Create extends CreateMapAbstract
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-
+            Log::error('Error in destroy: ' . $e->getMessage(), $e->getTrace());
             throw $e;
         }
     }
@@ -218,7 +250,7 @@ class Create extends CreateMapAbstract
             'id' => $role->id,
             'name' => $role->name,
             'description' => $role->description,
-            'alias' => $role->alias, // Bao gồm alias
+            'alias' => $role->alias,
             'created_at' => $role->created_at ? \Carbon\Carbon::parse($role->created_at)->toDateTimeString() : null,
         ];
     }

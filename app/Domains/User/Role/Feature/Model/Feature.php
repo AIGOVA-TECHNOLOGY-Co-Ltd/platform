@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Domains\CoreApp\Model\ModelAbstract;
 use App\Domains\User\Role\RoleFeature\Model\RoleFeature as RoleFeatureModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Domains\User\Role\Model\Role as RoleModel;
 
 class Feature extends ModelAbstract
 {

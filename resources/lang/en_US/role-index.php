@@ -14,4 +14,5 @@ return [
     'Delete' => 'Delete',
     'confirm' => 'Confirm',
     'Feature Names' => 'Feature Names',
+    'No' => 'No',
 ];
