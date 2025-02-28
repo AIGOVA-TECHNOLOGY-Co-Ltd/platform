@@ -9,13 +9,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property mixed $owner
  */
 class Enterprise extends ModelAbstract
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes; // Thêm SoftDeletes vào đây
 
     protected $table = 'enterprises';
 
@@ -31,6 +32,8 @@ class Enterprise extends ModelAbstract
     ];
 
     protected $hidden = [];
+
+    protected $dates = ['deteted_at']; // Khai báo cột deleted_at là kiểu ngày tháng
 
     protected $casts = [
         'created_at' => 'datetime',

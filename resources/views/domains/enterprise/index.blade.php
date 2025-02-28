@@ -24,10 +24,27 @@
                     <td>{{$row['roleName']}}</td>
                     <td>{{$row['name']}}</td>
                     <td>
-                        <a class="btn btn-primary"
-                           href="{{route('enterprise.show',['id'=> $row['id']])}}">{{__('enterprise-index.edit-button')}}</a>
-                        <a href="javascript:;" data-toggle="modal" data-target="#delete-modal"
-                           class="btn btn-outline-danger mr-5">{{__('enterprise-index.delete-button')}}</a>
+                        @if($row['deleted_at'] == null)
+                            <a class="btn btn-primary min-w-5"
+                               href="{{ route('enterprise.show',['id'=> $row['id']]) }}">{{__('enterprise-index.edit-button')}}</a>
+                            <a class="btn btn-outline-danger min-w-5"
+                               href="{{route('enterprise.destroy',['id'=> $row['id']])}}"
+                               onclick="event.preventDefault(); document.getElementById('inactive-form-{{$row['id']}}').submit();">{{__('enterprise-index.inactive_button')}}</a>
+                            <form id="inactive-form-{{$row['id']}}" action="{{route('enterprise.destroy',['id'=> $row['id']])}}" method="POST" style="display: none;">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        @else
+                            <a class="btn btn-success min-w-5"
+                                href="{{route('enterprise.restore',['id'=> $row['id']])}}"
+                                onclick="event.preventDefault(); document.getElementById('restore-form-{{$row['id']}}').submit();">{{__('enterprise-index.restore-button')}}</a>
+                                <form id="restore-form-{{$row['id']}}" action="{{route('enterprise.restore',['id'=> $row['id']])}}" method="POST" style="display: none;">
+                                    @csrf
+                                    @method('PATCH')
+                                </form>
+                                <a href="javascript:;" data-toggle="modal" data-target="#delete-modal"
+                                   class="btn btn-danger min-w-5">{{__('enterprise-index.delete-button')}}</a>
+                        @endif
                     </td>
                 </tr>
             @endforeach

@@ -102,11 +102,44 @@ class EnterpriseController extends ControllerAbstract
         return redirect()->route('enterprise.index');
     }
 
+    /**
+     * Soft delete enterprise
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Request $request)
     {
         $id = $request->route('id');
 
-        $this->service->delete($id, $this->auth);
+        $this->service->softDelete($id, $this->auth);
+
+        return redirect()->route('enterprise.index');
+    }
+
+    /**
+     * Restore enterprise
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore(Request $request)
+    {
+        $id = $request->route('id');
+
+        $this->service->restore($id, $this->auth);
+
+        return redirect()->route('enterprise.index');
+    }
+
+    /**
+     * Force delete enterprise
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function forceDelete(Request $request)
+    {
+        $id = $request->route('id');
+
+        $this->service->forceDelete($id, $this->auth);
 
         return redirect()->route('enterprise.index');
     }

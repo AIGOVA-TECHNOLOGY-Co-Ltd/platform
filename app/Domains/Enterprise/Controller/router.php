@@ -13,6 +13,10 @@ Route::group(['middleware' => ['user-auth']], static function () {
     Route::get('/enterprise/{id}', [EnterpriseController::class, 'show'])->name('enterprise.show');
     // create route handle update
     Route::put('/enterprise/update/{id}', [EnterpriseController::class, 'update'])->name('enterprise.update');
-    // create route handle delete
+    // create route handle soft delete
     Route::delete('/enterprise/{id}', [EnterpriseController::class, 'destroy'])->name('enterprise.destroy');
+    // create route handle restore
+    Route::patch('/enterprise/{id}/restore', [EnterpriseController::class, 'restore'])->name('enterprise.restore');
+    // create route handle force delete
+    Route::delete('/enterprise/{id}/force-delete', [EnterpriseController::class, 'forceDelete'])->name('enterprise.force-delete');
 });
