@@ -13,14 +13,29 @@ class Delete
      */
     public function __invoke(int $role_id): RedirectResponse
     {
-        // Xóa tất cả permissions liên quan đến role_id
-        PermissionModel::where('role_id', $role_id)->delete();
-        // // Soft delete
+        // Hard delete all permissions for the given role_id
         // PermissionModel::where('role_id', $role_id)->delete();
-        // // or
-        // PermissionModel::where('role_id', $role_id)->update(['deleted_at' => now()]);
 
+        // Soft delete all permissions for the given role_id
+        $deletedCount = PermissionModel::where('role_id', $role_id)
+            ->whereNull('delete_at') // Chỉ xóa các bản ghi chưa bị soft delete
+            ->delete();
+        // Kiểm tra nếu có bản ghi nào được soft delete
+        if ($deletedCount === 0) {
+            return redirect()->route('user.permissions.index')->with('error', __('permissions-delete.no-records'));
+        }
         // Trả về redirect response
         return redirect()->route('user.permissions.index')->with('success', __('permissions-delete.success'));
     }
 }
+
+
+/*  // retrieve soft-deleted records
+    // Include soft-deleted records:
+    PermissionModel::withTrashed()->where('role_id', $role_id)->get();
+    // Only soft-deleted records:
+    PermissionModel::onlyTrashed()->where('role_id', $role_id)->get();
+    // Restore a soft-deleted record:
+    PermissionModel::withTrashed()->where('role_id', $role_id)->restore();
+
+*/
