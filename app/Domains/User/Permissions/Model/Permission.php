@@ -6,15 +6,14 @@ use App\Domains\User\Role\Model\Role;  // Thêm dòng này
 use App\Domains\User\Permissions\Model\Action;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Domains\CoreApp\Model\ModelAbstract;
-// use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Permission extends ModelAbstract
 {
     use HasFactory;
-    // use SoftDeletes;
+    use SoftDeletes;
     protected $table = 'permissions';
-
-    // protected $dates = ['deleted_at'];
+    const DELETED_AT = 'delete_at';
     protected $fillable = [
         'role_id',
         'action_id',
@@ -22,6 +21,7 @@ class Permission extends ModelAbstract
     protected $casts = [
         'created_at' => 'datetime',
         'value' => 'integer',
+        'deleted_at' => 'datetime',
     ];
 
     public function user()
